@@ -24,7 +24,6 @@ namespace Snake
         {
             var first = _parts.First();
             var second = _parts.ElementAt(1);
-            var moveX = first.Y.Equals(second.Y);
 
             _parts = _parts.Select((part, index) =>
                 {
@@ -41,15 +40,15 @@ namespace Snake
                             case Direction.Left:
                                 return new Vector2(part.X - 1, part.Y);
                             case Direction.Forward:
-                                break;
+                                return new Vector2(part.X + first.X - second.X, part.Y + first.Y - second.Y);
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
                         }
                     }
 
-                    return moveX
-                        ? new Vector2(part.X + 1, part.Y)
-                        : new Vector2(part.X, part.Y + 1);
+                    var prev = _parts[index - 1];
+
+                    return new Vector2(prev.X, prev.Y);
                 }
             ).ToList();
         }

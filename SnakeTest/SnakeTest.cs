@@ -9,148 +9,189 @@ namespace SnakeTest
     public class SnakeTest
     {
         [Fact]
-        public void MovesUp()
+        public void MovesUpAndForward()
         {
             var snake = CreateSnake(new[]
             {
                 new[] {" ", " ", " "},
-                new[] {"3", "2", "1"},
                 new[] {" ", " ", " "},
+                new[] {"3", "2", "1"},
             });
-
+        
             snake.Move(Direction.Up);
-
+            snake.Move(Direction.Forward);
+        
             AssertState(new[]
             {
                 new[] {" ", " ", "1"},
-                new[] {" ", "3", "2"},
-                new[] {" ", " ", " "},
+                new[] {" ", " ", "2"},
+                new[] {" ", " ", "3"},
             }, snake.GetState());
         }
 
-        // [Fact]
-
-        // public void MovesUpAndForward()
-        // {
-        //     var snake = new Snake.Snake(new List<Vector2>
-        //     {
-        //         new(2, 2), // - - -
-        //         new(1, 2), // - - -
-        //         new(0, 2), // o o >
-        //     });
-        //
-        //     snake.Move(Direction.Up);
-        //     snake.Move(Direction.Forward);
-        //
-        //     AssertState(new[,]
-        //     {
-        //         {"", "", ">"},
-        //         {"", "", "o"},
-        //         {"", "", "o"},
-        //     }, snake.GetState());
-        // }
-
-        [Fact]
-        public void MovesDown()
+        [Theory]
+        [MemberData(nameof(TurnsData))]
+        public void Turns(Direction direction, string[][] state, string[][] expected)
         {
-            var snake = CreateSnake(new[]
-            {
-                new[] {"3", "2", "1"},
-                new[] {" ", " ", " "},
-                new[] {" ", " ", " "},
-            });
+            var snake = CreateSnake(state);
 
-            snake.Move(Direction.Down);
+            snake.Move(direction);
             
-            AssertState(new[]
-            {
-                new[] {" ", "3", "2"},
-                new[] {" ", " ", "1"},
-                new[] {" ", " ", " "},
-            }, snake.GetState());
+            AssertState(expected, snake.GetState());
         }
 
-        [Fact]
-        public void MovesRight()
+        [Theory]
+        [MemberData(nameof(SingleMovesData))]
+        public void SingleMoves(string _, string[][] state, string[][] expected)
         {
-            var snake = CreateSnake(new[]
-            {
-                new[] {"3", " ", " "},
-                new[] {"2", " ", " "},
-                new[] {"1", " ", " "},
-            });
-
-            snake.Move(Direction.Right);
-            
-            AssertState(new[]
-            {
-                new[] {" ", " ", " "},
-                new[] {"3", " ", " "},
-                new[] {"2", "1", " "},
-            }, snake.GetState());
-        }
-
-        [Fact]
-        public void MovesLeft()
-        {
-            var snake = CreateSnake(new[]
-            {
-                new[] {" ", "3", " "},
-                new[] {" ", "2", " "},
-                new[] {" ", "1", " "},
-            });
-
-            snake.Move(Direction.Left);
-            
-            AssertState(new[]
-            {
-                new[] {" ", " ", " "},
-                new[] {" ", "3", " "},
-                new[] {"1", "2", " "},
-            }, snake.GetState());
-        }
-
-        [Fact]
-        public void MovesForwardHorizontally()
-        {
-            var snake = CreateSnake(new[]
-            {
-                new[] {"3", "2", "1", " "},
-                new[] {" ", " ", " ", " "},
-                new[] {" ", " ", " ", " "},
-            });
+            var snake = CreateSnake(state);
 
             snake.Move(Direction.Forward);
             
-            AssertState(new[]
-            {
-                new[] {" ", "3", "2", "1"},
-                new[] {" ", " ", " ", " "},
-                new[] {" ", " ", " ", " "},
-            }, snake.GetState());
+            AssertState(expected, snake.GetState());
         }
-
-        [Fact]
-        public void MovesForwardVertically()
-        {
-            var snake = CreateSnake(new[]
+        
+        public static IEnumerable<object[]> SingleMovesData =>
+            new List<object[]>
             {
-                new[] {"3", " ", " "},
-                new[] {"2", " ", " "},
-                new[] {"1", " ", " "},
-                new[] {" ", " ", " "},
-            });
-
-            snake.Move(Direction.Forward);
-            
-            AssertState(new[]
+                new object[]
+                {
+                    "forward vertically down",
+                    new[]
+                    {
+                        new[] {"3", " ", " "},
+                        new[] {"2", " ", " "},
+                        new[] {"1", " ", " "},
+                        new[] {" ", " ", " "},
+                    },
+                    new[]
+                    {
+                        new[] {" ", " ", " "},
+                        new[] {"3", " ", " "},
+                        new[] {"2", " ", " "},
+                        new[] {"1", " ", " "},
+                    },
+                },
+                new object[]
+                {
+                    "forward vertically up",
+                    new[]
+                    {
+                        new[] {" ", " ", " "},
+                        new[] {"1", " ", " "},
+                        new[] {"2", " ", " "},
+                        new[] {"3", " ", " "},
+                    },
+                    new[]
+                    {
+                        new[] {"1", " ", " "},
+                        new[] {"2", " ", " "},
+                        new[] {"3", " ", " "},
+                        new[] {" ", " ", " "},
+                    },
+                },
+                new object[]
+                {
+                    "forward horizontally left",
+                    new[]
+                    {
+                        new[] {" ", " ", " ", " "},
+                        new[] {" ", "1", "2", "3"},
+                        new[] {" ", " ", " ", " "},
+                    },
+                    new[]
+                    {
+                        new[] {" ", " ", " ", " "},
+                        new[] {"1", "2", "3", " "},
+                        new[] {" ", " ", " ", " "},
+                    },
+                },
+                new object[]
+                {
+                    "forward horizontally right",
+                    new[]
+                    {
+                        new[] {" ", " ", " ", " "},
+                        new[] {"3", "2", "1", " "},
+                        new[] {" ", " ", " ", " "},
+                    },
+                    new[]
+                    {
+                        new[] {" ", " ", " ", " "},
+                        new[] {" ", "3", "2", "1"},
+                        new[] {" ", " ", " ", " "},
+                    },
+                },
+            };
+        
+        public static IEnumerable<object[]> TurnsData =>
+            new List<object[]>
             {
-                new[] {" ", " ", " "},
-                new[] {"3", " ", " "},
-                new[] {"2", " ", " "},
-                new[] {"1", " ", " "},
-            }, snake.GetState());
-        }
+                new object[]
+                {
+                    Direction.Left,
+                    new[]
+                    {
+                        new[] {" ", "3", " "},
+                        new[] {" ", "2", " "},
+                        new[] {" ", "1", " "},
+                    },
+                    new[]
+                    {
+                        new[] {" ", " ", " "},
+                        new[] {" ", "3", " "},
+                        new[] {"1", "2", " "},
+                    },
+                },
+                new object[]
+                {
+                    Direction.Right,
+                    new[]
+                    {
+                        new[] {"3", " ", " "},
+                        new[] {"2", " ", " "},
+                        new[] {"1", " ", " "},
+                    },
+                    new[]
+                    {
+                        new[] {" ", " ", " "},
+                        new[] {"3", " ", " "},
+                        new[] {"2", "1", " "},
+                    },
+                },
+                new object[]
+                {
+                    Direction.Down,
+                    new[]
+                    {
+                        new[] {"3", "2", "1"},
+                        new[] {" ", " ", " "},
+                        new[] {" ", " ", " "},
+                    },
+                    new[]
+                    {
+                        new[] {" ", "3", "2"},
+                        new[] {" ", " ", "1"},
+                        new[] {" ", " ", " "},
+                    },
+                },
+                new object[]
+                {
+                    Direction.Up,
+                    new[]
+                    {
+                        new[] {" ", " ", " "},
+                        new[] {"3", "2", "1"},
+                        new[] {" ", " ", " "},
+                    },
+                    new[]
+                    {
+                        new[] {" ", " ", "1"},
+                        new[] {" ", "3", "2"},
+                        new[] {" ", " ", " "},
+                    },
+                },
+            };
 
         private static Snake.Snake CreateSnake(string[][] state)
         {
