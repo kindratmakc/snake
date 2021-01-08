@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using Snake;
 using Xunit;
 
 namespace SnakeTest
@@ -9,101 +11,173 @@ namespace SnakeTest
         [Fact]
         public void MovesUp()
         {
-            var snake = new Snake(new List<Vector2>
+            var snake = CreateSnake(new[]
             {
-                new(2, 1), // - - -
-                new(1, 1), // o o >
-                new(0, 1), // - - -
+                new[] {" ", " ", " "},
+                new[] {"3", "2", "1"},
+                new[] {" ", " ", " "},
             });
 
             snake.Move(Direction.Up);
 
-            Assert.Equal(new List<Vector2>
+            AssertState(new[]
             {
-                new(2, 0), // - - >
-                new(2, 1), // - o o
-                new(1, 1), // - - -
+                new[] {" ", " ", "1"},
+                new[] {" ", "3", "2"},
+                new[] {" ", " ", " "},
             }, snake.GetState());
         }
+
+        // [Fact]
+
+        // public void MovesUpAndForward()
+        // {
+        //     var snake = new Snake.Snake(new List<Vector2>
+        //     {
+        //         new(2, 2), // - - -
+        //         new(1, 2), // - - -
+        //         new(0, 2), // o o >
+        //     });
+        //
+        //     snake.Move(Direction.Up);
+        //     snake.Move(Direction.Forward);
+        //
+        //     AssertState(new[,]
+        //     {
+        //         {"", "", ">"},
+        //         {"", "", "o"},
+        //         {"", "", "o"},
+        //     }, snake.GetState());
+        // }
 
         [Fact]
         public void MovesDown()
         {
-            var snake = new Snake(new List<Vector2>
+            var snake = CreateSnake(new[]
             {
-                new(2, 0), // o o >
-                new(1, 0), // - - -
-                new(0, 0), // - - -
+                new[] {"3", "2", "1"},
+                new[] {" ", " ", " "},
+                new[] {" ", " ", " "},
             });
 
             snake.Move(Direction.Down);
-
-            Assert.Equal(new List<Vector2>
+            
+            AssertState(new[]
             {
-                new(2, 1), // - o o
-                new(2, 0), // - - >
-                new(1, 0), // - - -
+                new[] {" ", "3", "2"},
+                new[] {" ", " ", "1"},
+                new[] {" ", " ", " "},
             }, snake.GetState());
         }
 
         [Fact]
         public void MovesRight()
         {
-            var snake = new Snake(new List<Vector2>
+            var snake = CreateSnake(new[]
             {
-                new(0, 2), // o - -
-                new(0, 1), // o - -
-                new(0, 0), // > - -
+                new[] {"3", " ", " "},
+                new[] {"2", " ", " "},
+                new[] {"1", " ", " "},
             });
 
             snake.Move(Direction.Right);
-
-            Assert.Equal(new List<Vector2>
+            
+            AssertState(new[]
             {
-                new(1, 2), // - - -
-                new(0, 2), // o - -
-                new(0, 1), // o > -
+                new[] {" ", " ", " "},
+                new[] {"3", " ", " "},
+                new[] {"2", "1", " "},
+            }, snake.GetState());
+        }
+
+        [Fact]
+        public void MovesLeft()
+        {
+            var snake = CreateSnake(new[]
+            {
+                new[] {" ", "3", " "},
+                new[] {" ", "2", " "},
+                new[] {" ", "1", " "},
+            });
+
+            snake.Move(Direction.Left);
+            
+            AssertState(new[]
+            {
+                new[] {" ", " ", " "},
+                new[] {" ", "3", " "},
+                new[] {"1", "2", " "},
             }, snake.GetState());
         }
 
         [Fact]
         public void MovesForwardHorizontally()
         {
-            var snake = new Snake(new List<Vector2>
+            var snake = CreateSnake(new[]
             {
-                new(2, 0),
-                new(1, 0),
-                new(0, 0),
+                new[] {"3", "2", "1", " "},
+                new[] {" ", " ", " ", " "},
+                new[] {" ", " ", " ", " "},
             });
 
             snake.Move(Direction.Forward);
-
-            Assert.Equal(new List<Vector2>
+            
+            AssertState(new[]
             {
-                new(3, 0),
-                new(2, 0),
-                new(1, 0),
+                new[] {" ", "3", "2", "1"},
+                new[] {" ", " ", " ", " "},
+                new[] {" ", " ", " ", " "},
             }, snake.GetState());
         }
 
         [Fact]
         public void MovesForwardVertically()
         {
-            var snake = new Snake(new List<Vector2>
+            var snake = CreateSnake(new[]
             {
-                new(0, 2),
-                new(0, 1),
-                new(0, 0),
+                new[] {"3", " ", " "},
+                new[] {"2", " ", " "},
+                new[] {"1", " ", " "},
+                new[] {" ", " ", " "},
             });
 
             snake.Move(Direction.Forward);
-
-            Assert.Equal(new List<Vector2>
+            
+            AssertState(new[]
             {
-                new(0, 3),
-                new(0, 2),
-                new(0, 1),
+                new[] {" ", " ", " "},
+                new[] {"3", " ", " "},
+                new[] {"2", " ", " "},
+                new[] {"1", " ", " "},
             }, snake.GetState());
+        }
+
+        private static Snake.Snake CreateSnake(string[][] state)
+        {
+            var parts = state.SelectMany((subArr, y) => subArr.Select((value, x) => new {x, y, value}))
+                .Where(item => item.value != " ")
+                .OrderBy(item => item.value)
+                .Select(item => new Vector2(item.x, item.y))
+                .ToList();
+
+            return new(parts);
+        }
+
+        private static void AssertState(string[][] expected, IList<Vector2> actual)
+        {
+            var actualMatrix = new string[expected.Length][];
+            for (int i = 0; i < expected.Length; i++)
+            {
+                actualMatrix[i] = Enumerable.Repeat(" ", expected[i].Length).ToArray();
+            }
+
+
+            foreach (var part in actual)
+            {
+                actualMatrix[(int) part.Y][(int) part.X] = (actual.IndexOf(part) + 1).ToString();
+            }
+
+            Assert.Equal(expected, actualMatrix);
         }
     }
 }
