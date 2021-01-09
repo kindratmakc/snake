@@ -9,7 +9,7 @@ namespace SnakeTest
     public class SnakeTest
     {
         [Fact]
-        public void Eats()
+        public void BecomesLongerWhenEats()
         {
             var snake = CreateSnake(new[]
             {
@@ -50,6 +50,28 @@ namespace SnakeTest
             }, snake.GetState());
         }
 
+        [Fact]
+        public void IgnoresTurnToNextToHeadDirection()
+        {
+            var snake = CreateSnake(new[]
+            {
+                new[] {" ", " ", " "},
+                new[] {" ", " ", " "},
+                new[] {"3", "2", "1"},
+            });
+        
+            snake.Turn(Direction.Up);
+            snake.Turn(Direction.Left);
+            snake.Move();
+        
+            AssertState(new[]
+            {
+                new[] {" ", " ", " "},
+                new[] {" ", " ", "1"},
+                new[] {" ", "3", "2"},
+            }, snake.GetState());
+        }
+
         [Theory]
         [MemberData(nameof(SingleMovesData))]
         public void SingleMoves(string _, string[][] state, string[][] expected)
@@ -70,18 +92,6 @@ namespace SnakeTest
             snake.Turn(direction);
             snake.Move();
             
-            AssertState(expected, snake.GetState());
-        }
-
-        [Theory]
-        [MemberData(nameof(TurnInOppositeDirectionData))]
-        public void IgnoresTurnInOppositeDirection(Direction direction, string[][] state, string[][] expected)
-        {
-            var snake = CreateSnake(state);
-        
-            snake.Turn(direction);
-            snake.Move();
-        
             AssertState(expected, snake.GetState());
         }
 
@@ -227,79 +237,6 @@ namespace SnakeTest
                 },
             };
         
-        public static IEnumerable<object[]> TurnInOppositeDirectionData =>
-            new List<object[]>
-            {
-                new object[]
-                {
-                    Direction.Left,
-                    new[]
-                    {
-                        new[] {" ", " ", " ", " "},
-                        new[] {"3", "2", "1", " "},
-                        new[] {" ", " ", " ", " "},
-                    },
-                    new[]
-                    {
-                        new[] {" ", " ", " ", " "},
-                        new[] {" ", "3", "2", "1"},
-                        new[] {" ", " ", " ", " "},
-                    },
-                },
-                new object[]
-                {
-                    Direction.Right,
-                    new[]
-                    {
-                        new[] {" ", " ", " ", " "},
-                        new[] {" ", "1", "2", "3"},
-                        new[] {" ", " ", " ", " "},
-                    },
-                    new[]
-                    {
-                        new[] {" ", " ", " ", " "},
-                        new[] {"1", "2", "3", " "},
-                        new[] {" ", " ", " ", " "},
-                    },
-                },
-                new object[]
-                {
-                    Direction.Up,
-                    new[]
-                    {
-                        new[] {" ", "3", " "},
-                        new[] {" ", "2", " "},
-                        new[] {" ", "1", " "},
-                        new[] {" ", " ", " "},
-                    },
-                    new[]
-                    {
-                        new[] {" ", " ", " "},
-                        new[] {" ", "3", " "},
-                        new[] {" ", "2", " "},
-                        new[] {" ", "1", " "},
-                    },
-                },
-                new object[]
-                {
-                    Direction.Down,
-                    new[]
-                    {
-                        new[] {" ", " ", " "},
-                        new[] {" ", "1", " "},
-                        new[] {" ", "2", " "},
-                        new[] {" ", "3", " "},
-                    },
-                    new[]
-                    {
-                        new[] {" ", "1", " "},
-                        new[] {" ", "2", " "},
-                        new[] {" ", "3", " "},
-                        new[] {" ", " ", " "},
-                    },
-                },
-            };
-
         private static Snake.Snake CreateSnake(string[][] state)
         {
             var parts = state.SelectMany((subArr, y) => subArr.Select((value, x) => new {x, y, value}))

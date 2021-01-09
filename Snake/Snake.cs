@@ -24,7 +24,8 @@ namespace Snake
 
         public void Turn(Direction direction)
         {
-            if (_direction.IsOppositeTo(direction)) return;
+            if (GetNextToHead() == GetHead() + direction.GetVector()) return;
+
             _direction = direction;
         }
 
