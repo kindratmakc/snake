@@ -18,8 +18,9 @@ namespace SnakeTest
                 new[] {"3", "2", "1"},
             });
         
-            snake.Move(Direction.Up);
-            snake.Move(Direction.Forward);
+            snake.Turn(Direction.Up);
+            snake.Move();
+            snake.Move();
         
             AssertState(new[]
             {
@@ -28,6 +29,18 @@ namespace SnakeTest
                 new[] {" ", " ", "3"},
             }, snake.GetState());
         }
+        
+        [Theory]
+        [MemberData(nameof(TurnInOppositeDirectionData))]
+        public void IgnoresTurnInOppositeDirection(Direction direction, string[][] state, string[][] expected)
+        {
+            var snake = CreateSnake(state);
+        
+            snake.Turn(direction);
+            snake.Move();
+        
+            AssertState(expected, snake.GetState());
+        }
 
         [Theory]
         [MemberData(nameof(TurnsData))]
@@ -35,7 +48,8 @@ namespace SnakeTest
         {
             var snake = CreateSnake(state);
 
-            snake.Move(direction);
+            snake.Turn(direction);
+            snake.Move();
             
             AssertState(expected, snake.GetState());
         }
@@ -46,7 +60,7 @@ namespace SnakeTest
         {
             var snake = CreateSnake(state);
 
-            snake.Move(Direction.Forward);
+            snake.Move();
             
             AssertState(expected, snake.GetState());
         }
@@ -188,6 +202,79 @@ namespace SnakeTest
                     {
                         new[] {" ", " ", "1"},
                         new[] {" ", "3", "2"},
+                        new[] {" ", " ", " "},
+                    },
+                },
+            };
+        
+        public static IEnumerable<object[]> TurnInOppositeDirectionData =>
+            new List<object[]>
+            {
+                new object[]
+                {
+                    Direction.Left,
+                    new[]
+                    {
+                        new[] {" ", " ", " ", " "},
+                        new[] {"3", "2", "1", " "},
+                        new[] {" ", " ", " ", " "},
+                    },
+                    new[]
+                    {
+                        new[] {" ", " ", " ", " "},
+                        new[] {" ", "3", "2", "1"},
+                        new[] {" ", " ", " ", " "},
+                    },
+                },
+                new object[]
+                {
+                    Direction.Right,
+                    new[]
+                    {
+                        new[] {" ", " ", " ", " "},
+                        new[] {" ", "1", "2", "3"},
+                        new[] {" ", " ", " ", " "},
+                    },
+                    new[]
+                    {
+                        new[] {" ", " ", " ", " "},
+                        new[] {"1", "2", "3", " "},
+                        new[] {" ", " ", " ", " "},
+                    },
+                },
+                new object[]
+                {
+                    Direction.Up,
+                    new[]
+                    {
+                        new[] {" ", "3", " "},
+                        new[] {" ", "2", " "},
+                        new[] {" ", "1", " "},
+                        new[] {" ", " ", " "},
+                    },
+                    new[]
+                    {
+                        new[] {" ", " ", " "},
+                        new[] {" ", "3", " "},
+                        new[] {" ", "2", " "},
+                        new[] {" ", "1", " "},
+                    },
+                },
+                new object[]
+                {
+                    Direction.Down,
+                    new[]
+                    {
+                        new[] {" ", " ", " "},
+                        new[] {" ", "1", " "},
+                        new[] {" ", "2", " "},
+                        new[] {" ", "3", " "},
+                    },
+                    new[]
+                    {
+                        new[] {" ", "1", " "},
+                        new[] {" ", "2", " "},
+                        new[] {" ", "3", " "},
                         new[] {" ", " ", " "},
                     },
                 },
