@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
@@ -16,6 +15,7 @@ namespace Snake
             GuessDirection();
         }
 
+
         public void Turn(Direction direction)
         {
             if (_direction.IsOppositeTo(direction)) return;
@@ -24,13 +24,7 @@ namespace Snake
 
         public void Move()
         {
-            _parts = _parts.Select((part, index) =>
-                {
-                    return index == 0
-                        ? Vector2.Add(part, _direction.GetVector())
-                        : new Vector2(_parts[index - 1].X, _parts[index - 1].Y);
-                }
-            ).ToList();
+            _parts = _parts.Select((part, index) => index == 0 ? part + _direction.GetVector() : _parts[index - 1].Clone()).ToList();
         }
         
         private void GuessDirection()
@@ -45,5 +39,13 @@ namespace Snake
 
         private Vector2 GetHead() => _parts.First();
         private Vector2 GetNextToHead() => _parts.ElementAt(1);
+    }
+
+    public static class VectorExtension
+    {
+        public static Vector2 Clone(this Vector2 vector)
+        {
+            return new Vector2(vector.X, vector.Y);
+        }
     }
 }
