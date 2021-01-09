@@ -9,6 +9,26 @@ namespace SnakeTest
     public class SnakeTest
     {
         [Fact]
+        public void Eats()
+        {
+            var snake = CreateSnake(new[]
+            {
+                new[] {" ", " ", " "},
+                new[] {"2", "1", " "},
+                new[] {" ", " ", " "},
+            });
+
+            snake.Eat();
+        
+            AssertState(new[]
+            {
+                new[] {" ", " ", " "},
+                new[] {"3", "2", "1"},
+                new[] {" ", " ", " "},
+            }, snake.GetState());
+        }
+        
+        [Fact]
         public void MovesUpAndForward()
         {
             var snake = CreateSnake(new[]

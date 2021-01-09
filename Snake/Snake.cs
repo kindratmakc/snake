@@ -15,6 +15,12 @@ namespace Snake
             GuessDirection();
         }
 
+        public void Eat()
+        {
+            var tail = _parts.Last().Clone();
+            Move();
+            _parts.Add(tail);
+        }
 
         public void Turn(Direction direction)
         {
@@ -26,7 +32,7 @@ namespace Snake
         {
             _parts = _parts.Select((part, index) => index == 0 ? part + _direction.GetVector() : _parts[index - 1].Clone()).ToList();
         }
-        
+
         private void GuessDirection()
         {
             _direction = Vector2.Subtract(GetHead(), GetNextToHead()).GetDirection();
@@ -38,6 +44,7 @@ namespace Snake
         }
 
         private Vector2 GetHead() => _parts.First();
+
         private Vector2 GetNextToHead() => _parts.ElementAt(1);
     }
 
