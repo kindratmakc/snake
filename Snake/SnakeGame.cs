@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Vector2 = System.Numerics.Vector2;
+using Vector2Numeric = System.Numerics.Vector2;
 
 namespace Snake
 {
     public class SnakeGame : Game
     {
+        private const int GridSize = 32;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Snake2DRenderer _snakeRenderer;
         private Snake _snake;
         private TimeSpan _timeSinceLastMove = TimeSpan.Zero;
-        private bool _isPaused = false;
+        private bool _isPaused;
+        private Texture2D _texture1Px;
 
         public SnakeGame()
         {
@@ -25,23 +27,29 @@ namespace Snake
 
         protected override void Initialize()
         {
-            _snake = new Snake(new List<Vector2>(new[]
+            _snake = new Snake(new List<Vector2Numeric>(new[]
             {
-                new Vector2(5, 0),
-                new Vector2(4, 0),
-                new Vector2(3, 0),
-                new Vector2(2, 0),
-                new Vector2(1, 0),
-                new Vector2(0, 0),
+                new Vector2Numeric(5, 0),
+                new Vector2Numeric(4, 0),
+                new Vector2Numeric(3, 0),
+                new Vector2Numeric(2, 0),
+                new Vector2Numeric(1, 0),
+                new Vector2Numeric(0, 0),
             }));
 
             base.Initialize();
+            Console.WriteLine(_graphics.GraphicsDevice.Adapter.CurrentDisplayMode.Width);
+            Console.WriteLine(_graphics.GraphicsDevice.Adapter.CurrentDisplayMode.Height);
+            Console.WriteLine("");
+            
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _snakeRenderer = new Snake2DRenderer(Content.Load<Texture2D>("pig"), _spriteBatch);
+            _texture1Px = new Texture2D(GraphicsDevice, 1, 1);
+            _texture1Px.SetData(new[] { Color.White });
         }
 
         protected override void Update(GameTime time)
@@ -54,7 +62,7 @@ namespace Snake
             if (!_isPaused)
             {
                 _timeSinceLastMove += time.ElapsedGameTime;
-                if (_timeSinceLastMove >= TimeSpan.FromSeconds(1))
+                if (_timeSinceLastMove >= TimeSpan.FromMilliseconds(1000))
                 {
                     _snake.Move();
                     _timeSinceLastMove = TimeSpan.Zero;
@@ -70,9 +78,32 @@ namespace Snake
 
             _spriteBatch.Begin();
             _snake.Render(_snakeRenderer);
+            DrawGrid(_spriteBatch);
+            
             _spriteBatch.End();
 
             base.Draw(time);
+        }
+
+        private void DrawGrid(SpriteBatch batch)
+        {
+            var gridColor = Color.Salmon;
+            var width = _graphics.GraphicsDevice.Adapter.CurrentDisplayMode.Width;
+            var height = _graphics.GraphicsDevice.Adapter.CurrentDisplayMode.Height;
+            var columns = width / GridSize;
+            var rows = height / GridSize;
+
+            for (var x = 0; x < columns; x++)
+            {
+                var rectangle = new Rectangle(new Point(x * GridSize, 0), new Point(1, height));
+                batch.Draw(_texture1Px, rectangle, gridColor);
+            }
+
+            for (var y = 0; y < rows; y++)
+            {
+                var rectangle = new Rectangle(new Point(0, y * GridSize), new Point(width, 1));
+                batch.Draw(_texture1Px, rectangle, gridColor);
+            }
         }
 
         private void HandleInput()
