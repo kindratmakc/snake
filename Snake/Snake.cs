@@ -42,6 +42,30 @@ namespace Snake
         {
             return _parts;
         }
+        
+        public void Render(ISnakeRenderer renderer)
+        {
+            foreach (var part in _parts)
+            {
+                if (_parts.IndexOf(part) == 0)
+                {
+                    renderer.RenderHead(part, (GetHead() - GetNextToHead()).GetDirection());
+                    continue;
+                }
+
+                if (_parts.IndexOf(part) == _parts.Count - 1)
+                {
+                    var previous = _parts.ElementAt(_parts.IndexOf(part) - 1);
+                    renderer.RenderTail(part, (previous - part).GetDirection());
+                    continue;
+                }
+
+                var toPrev = (_parts.ElementAt(_parts.IndexOf(part) - 1) - part).GetDirection();
+                var toNext = (_parts.ElementAt(_parts.IndexOf(part) + 1) - part).GetDirection();
+                
+                renderer.RenderBody(part, toPrev, toNext);
+            }
+        }
 
         private Vector2 GetHead() => _parts.First();
 
@@ -54,5 +78,12 @@ namespace Snake
         {
             return new(vector.X, vector.Y);
         }
+    }
+    
+    public interface ISnakeRenderer
+    {
+        public void RenderHead(Vector2 coordinates, Direction direction);
+        public void RenderBody(Vector2 coordinates, Direction toPrev, Direction toNext);
+        public void RenderTail(Vector2 coordinates, Direction direction);
     }
 }

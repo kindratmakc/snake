@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Vector2 = System.Numerics.Vector2;
 
 namespace Snake
 {
@@ -8,7 +11,10 @@ namespace Snake
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private OldSnake _oldSnake;
+        private Snake2DRenderer _snakeRenderer;
+        private Snake _snake;
+        private TimeSpan _timeSinceLastMove = TimeSpan.Zero;
+        private bool _isPaused = false;
 
         public SnakeGame()
         {
@@ -19,7 +25,15 @@ namespace Snake
 
         protected override void Initialize()
         {
-            _oldSnake = new OldSnake();
+            _snake = new Snake(new List<Vector2>(new[]
+            {
+                new Vector2(5, 0),
+                new Vector2(4, 0),
+                new Vector2(3, 0),
+                new Vector2(2, 0),
+                new Vector2(1, 0),
+                new Vector2(0, 0),
+            }));
 
             base.Initialize();
         }
@@ -27,15 +41,25 @@ namespace Snake
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _oldSnake.LoadContent(Content);
+            _snakeRenderer = new Snake2DRenderer(Content.Load<Texture2D>("pig"), _spriteBatch);
         }
 
         protected override void Update(GameTime time)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            
+            HandleInput();
 
-            _oldSnake.Update(time);
+            if (!_isPaused)
+            {
+                _timeSinceLastMove += time.ElapsedGameTime;
+                if (_timeSinceLastMove >= TimeSpan.FromSeconds(1))
+                {
+                    _snake.Move();
+                    _timeSinceLastMove = TimeSpan.Zero;
+                }
+            }
 
             base.Update(time);
         }
@@ -45,10 +69,38 @@ namespace Snake
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            _oldSnake.Draw(_spriteBatch);
+            _snake.Render(_snakeRenderer);
             _spriteBatch.End();
 
             base.Draw(time);
+        }
+
+        private void HandleInput()
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                _snake.Turn(Direction.Up);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                _snake.Turn(Direction.Down);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                _snake.Turn(Direction.Left);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                _snake.Turn(Direction.Right);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                _isPaused = !_isPaused;
+            }
         }
     }
 }
