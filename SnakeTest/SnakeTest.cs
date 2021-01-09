@@ -29,16 +29,15 @@ namespace SnakeTest
                 new[] {" ", " ", "3"},
             }, snake.GetState());
         }
-        
+
         [Theory]
-        [MemberData(nameof(TurnInOppositeDirectionData))]
-        public void IgnoresTurnInOppositeDirection(Direction direction, string[][] state, string[][] expected)
+        [MemberData(nameof(SingleMovesData))]
+        public void SingleMoves(string _, string[][] state, string[][] expected)
         {
             var snake = CreateSnake(state);
-        
-            snake.Turn(direction);
+
             snake.Move();
-        
+            
             AssertState(expected, snake.GetState());
         }
 
@@ -55,16 +54,17 @@ namespace SnakeTest
         }
 
         [Theory]
-        [MemberData(nameof(SingleMovesData))]
-        public void SingleMoves(string _, string[][] state, string[][] expected)
+        [MemberData(nameof(TurnInOppositeDirectionData))]
+        public void IgnoresTurnInOppositeDirection(Direction direction, string[][] state, string[][] expected)
         {
             var snake = CreateSnake(state);
-
+        
+            snake.Turn(direction);
             snake.Move();
-            
+        
             AssertState(expected, snake.GetState());
         }
-        
+
         public static IEnumerable<object[]> SingleMovesData =>
             new List<object[]>
             {
