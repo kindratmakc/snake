@@ -35,7 +35,7 @@ namespace Snake
 
         private void GuessDirection()
         {
-            _direction = Vector2.Subtract(GetHead(), GetNextToHead()).GetDirection();
+            _direction = (GetHead() - GetNextToHead()).GetDirection();
         }
 
         public IList<Vector2> GetState()
@@ -52,7 +52,7 @@ namespace Snake
     {
         public static Vector2 Clone(this Vector2 vector)
         {
-            return new Vector2(vector.X, vector.Y);
+            return new(vector.X, vector.Y);
         }
     }
 }
