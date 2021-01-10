@@ -11,8 +11,8 @@ namespace SnakeGame.Domain
         private Direction _direction;
         private bool _isDead;
 
-        public delegate void OnDeathHandler();
-        public event OnDeathHandler OnDeath;
+        public delegate void DeathHandler();
+        public event DeathHandler Died;
 
         public Snake(IList<Vector2> parts, Size boardSize)
         {
@@ -93,7 +93,7 @@ namespace SnakeGame.Domain
 
         private void Die()
         {
-            OnDeath?.Invoke();
+            Died?.Invoke();
             _isDead = true;
         }
 

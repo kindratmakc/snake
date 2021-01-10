@@ -66,7 +66,7 @@ namespace SnakeGame
                     new Vector2Numeric(0, 0),
                 }),
                 new Size(_columns, _rows));
-            snake.OnDeath += () => Console.WriteLine("Snake is dead.");
+            snake.Died += () => Console.WriteLine("Snake is dead.");
 
             return snake;
         }
