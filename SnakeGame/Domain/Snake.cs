@@ -34,10 +34,13 @@ namespace SnakeGame.Domain
 
         public void Move()
         {
+            if (_isDead) return;
+
             var newParts = _parts.Select((part, index) => index == 0
                     ? part + _direction.GetVector()
                     : _parts[index - 1].Clone()
                 ).ToList();
+
             if (HasCollisions(newParts))
             {
                 Die();
