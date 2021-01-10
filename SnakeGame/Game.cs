@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using XnaGame = Microsoft.Xna.Framework.Game;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SnakeGame.Domain;
 using Vector2Numeric = System.Numerics.Vector2;
 
-namespace Snake
+namespace SnakeGame
 {
-    public class SnakeGame : Game
+    public class Game : XnaGame
     {
         private const int GridSize = 32;
         private GraphicsDeviceManager _graphics;
@@ -22,7 +24,7 @@ namespace Snake
         private int _columns;
         private int _rows;
 
-        public SnakeGame()
+        public Game()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -32,7 +34,7 @@ namespace Snake
         protected override void Initialize()
         {
             base.Initialize();
-            
+
             _width = _graphics.GraphicsDevice.Viewport.Width;
             _height = _graphics.GraphicsDevice.Viewport.Height;
             _columns = _width / GridSize;
@@ -48,14 +50,13 @@ namespace Snake
                     new Vector2Numeric(0, 0),
                 }),
                 new System.Drawing.Size(_columns, _rows));
-            
-            
+
+
             Console.WriteLine("Width: " + _width);
             Console.WriteLine("Height: " + _height);
             Console.WriteLine("Columns(x): " + _columns);
             Console.WriteLine("Row(y): " + _rows);
             Console.WriteLine("");
-            
         }
 
         protected override void LoadContent()
@@ -63,14 +64,15 @@ namespace Snake
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _snakeRenderer = new Snake2DRenderer(Content.Load<Texture2D>("pig"), _spriteBatch);
             _texture1Px = new Texture2D(GraphicsDevice, 1, 1);
-            _texture1Px.SetData(new[] { Color.White });
+            _texture1Px.SetData(new[] {Color.White});
         }
 
         protected override void Update(GameTime time)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+                Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            
+
             HandleInput();
 
             if (!_isPaused)
@@ -92,12 +94,7 @@ namespace Snake
 
             _spriteBatch.Begin();
             _snake.Render(_snakeRenderer);
-
-            if (Environment.GetEnvironmentVariable("GRID_ENABLED") != null)
-            {
-                DrawGrid(_spriteBatch);
-            }
-            
+            DrawGrid(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(time);
@@ -105,6 +102,11 @@ namespace Snake
 
         private void DrawGrid(SpriteBatch batch)
         {
+            if (Environment.GetEnvironmentVariable("GRID_ENABLED") == null)
+            {
+                return;
+            }
+            
             var gridColor = Color.Salmon;
 
             for (var x = 0; x < _columns; x++)

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
 
-namespace Snake
+namespace SnakeGame.Domain
 {
     public class Snake
     {
@@ -89,7 +88,6 @@ namespace Snake
 
         private void Die()
         {
-            Console.WriteLine("Died");
             _isDead = true;
         }
 

@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace Snake
+namespace SnakeGame
 {
     public static class Program
     {
         [STAThread]
         static void Main()
         {
-            using var game = new SnakeGame();
+            using var game = new Game();
             game.Run();
         }
     }

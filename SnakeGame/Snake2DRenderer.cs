@@ -1,9 +1,10 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SnakeGame.Domain;
 using Vector2Numeric = System.Numerics.Vector2;
 
-namespace Snake
+namespace SnakeGame
 {
     public class Snake2DRenderer : ISnakeRenderer
     {

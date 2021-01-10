@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using Snake;
+using SnakeGame.Domain;
 using Xunit;
 
 namespace SnakeTest
@@ -302,7 +302,7 @@ namespace SnakeTest
                 },
             };
         
-        private static Snake.Snake CreateSnake(string[][] state)
+        private static Snake CreateSnake(string[][] state)
         {
             
             var parts = state.SelectMany((subArr, y) => subArr.Select((value, x) => new {x, y, value}))
@@ -312,7 +312,7 @@ namespace SnakeTest
                 .ToList();
             var columns = state.Select(subArr => subArr.Length).Max();
 
-            return new Snake.Snake(parts, new Size(columns, state.Length));
+            return new Snake(parts, new Size(columns, state.Length));
         }
 
         private static void AssertState(string[][] expected, IList<Vector2> actual)
