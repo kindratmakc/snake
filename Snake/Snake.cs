@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 
@@ -7,11 +9,14 @@ namespace Snake
     public class Snake
     {
         private IList<Vector2> _parts;
+        private readonly Point _boardSize;
         private Direction _direction;
+        private bool _isDead;
 
-        public Snake(IList<Vector2> parts)
+        public Snake(IList<Vector2> parts, Point boardSize)
         {
             _parts = parts;
+            _boardSize = boardSize;
             GuessDirection();
         }
 
@@ -31,19 +36,35 @@ namespace Snake
 
         public void Move()
         {
-            _parts = _parts.Select((part, index) => index == 0 ? part + _direction.GetVector() : _parts[index - 1].Clone()).ToList();
-        }
+            _parts = _parts.Select((part, index) =>
+            {
+                if (_isDead)
+                {
+                    return part;
+                }
+                if (index == 0)
+                {
+                    var nextHeadPosition = part + _direction.GetVector();
+                    var board = new Rectangle(new Point(0, 0), new Size(_boardSize));
 
-        private void GuessDirection()
-        {
-            _direction = (GetHead() - GetNextToHead()).GetDirection();
+                    if (!board.Contains(new Point((int)nextHeadPosition.X, (int)nextHeadPosition.Y)))
+                    {
+                        Die();
+                        return part;
+                    }
+
+                    return nextHeadPosition;
+                }
+                
+                return _parts[index - 1].Clone();
+            }).ToList();
         }
 
         public IList<Vector2> GetState()
         {
             return _parts;
         }
-        
+
         public void Render(ISnakeRenderer renderer)
         {
             foreach (var part in _parts)
@@ -68,9 +89,25 @@ namespace Snake
             }
         }
 
+        private void Die()
+        {
+            Console.WriteLine("Died");
+            _isDead = true;
+        }
+
+        private void GuessDirection()
+        {
+            _direction = (GetHead() - GetNextToHead()).GetDirection();
+        }
+
         private Vector2 GetHead() => _parts.First();
 
         private Vector2 GetNextToHead() => _parts.ElementAt(1);
+
+        public bool IsDead()
+        {
+            return _isDead;
+        }
     }
 
     public static class VectorExtension

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Snake;
@@ -8,6 +9,27 @@ namespace SnakeTest
 {
     public class SnakeTest
     {
+        [Fact]
+        public void DiesWhenCollidesWithBorders()
+        {
+            var snake = CreateSnake(new[]
+            {
+                new[] {" ", " ", " "},
+                new[] {"3", "2", "1"},
+                new[] {" ", " ", " "},
+            });
+
+            snake.Move();
+        
+            AssertState(new[]
+            {
+                new[] {" ", " ", " "},
+                new[] {"3", "2", "1"},
+                new[] {" ", " ", " "},
+            }, snake.GetState());
+            Assert.True(snake.IsDead());
+        }
+        
         [Fact]
         public void BecomesLongerWhenEats()
         {
@@ -239,13 +261,15 @@ namespace SnakeTest
         
         private static Snake.Snake CreateSnake(string[][] state)
         {
+            
             var parts = state.SelectMany((subArr, y) => subArr.Select((value, x) => new {x, y, value}))
                 .Where(item => item.value != " ")
                 .OrderBy(item => item.value)
                 .Select(item => new Vector2(item.x, item.y))
                 .ToList();
+            var x = state.Select(subArr => subArr.Length).Max();
 
-            return new(parts);
+            return new(parts, new Point(x, state.Length));
         }
 
         private static void AssertState(string[][] expected, IList<Vector2> actual)

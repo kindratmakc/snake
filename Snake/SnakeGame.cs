@@ -17,6 +17,10 @@ namespace Snake
         private TimeSpan _timeSinceLastMove = TimeSpan.Zero;
         private bool _isPaused;
         private Texture2D _texture1Px;
+        private int _width;
+        private int _height;
+        private int _columns;
+        private int _rows;
 
         public SnakeGame()
         {
@@ -27,19 +31,29 @@ namespace Snake
 
         protected override void Initialize()
         {
-            _snake = new Snake(new List<Vector2Numeric>(new[]
-            {
-                new Vector2Numeric(5, 0),
-                new Vector2Numeric(4, 0),
-                new Vector2Numeric(3, 0),
-                new Vector2Numeric(2, 0),
-                new Vector2Numeric(1, 0),
-                new Vector2Numeric(0, 0),
-            }));
-
             base.Initialize();
-            Console.WriteLine(_graphics.GraphicsDevice.Adapter.CurrentDisplayMode.Width);
-            Console.WriteLine(_graphics.GraphicsDevice.Adapter.CurrentDisplayMode.Height);
+            
+            _width = _graphics.GraphicsDevice.Viewport.Width;
+            _height = _graphics.GraphicsDevice.Viewport.Height;
+            _columns = _width / GridSize;
+            _rows = _height / GridSize;
+
+            _snake = new Snake(new List<Vector2Numeric>(new[]
+                {
+                    new Vector2Numeric(5, 0),
+                    new Vector2Numeric(4, 0),
+                    new Vector2Numeric(3, 0),
+                    new Vector2Numeric(2, 0),
+                    new Vector2Numeric(1, 0),
+                    new Vector2Numeric(0, 0),
+                }),
+                new System.Drawing.Point(_columns, _rows));
+            
+            
+            Console.WriteLine("Width: " + _width);
+            Console.WriteLine("Height: " + _height);
+            Console.WriteLine("Columns(x): " + _columns);
+            Console.WriteLine("Row(y): " + _rows);
             Console.WriteLine("");
             
         }
@@ -62,7 +76,7 @@ namespace Snake
             if (!_isPaused)
             {
                 _timeSinceLastMove += time.ElapsedGameTime;
-                if (_timeSinceLastMove >= TimeSpan.FromMilliseconds(1000))
+                if (_timeSinceLastMove >= TimeSpan.FromMilliseconds(250))
                 {
                     _snake.Move();
                     _timeSinceLastMove = TimeSpan.Zero;
@@ -92,20 +106,16 @@ namespace Snake
         private void DrawGrid(SpriteBatch batch)
         {
             var gridColor = Color.Salmon;
-            var width = _graphics.GraphicsDevice.Adapter.CurrentDisplayMode.Width;
-            var height = _graphics.GraphicsDevice.Adapter.CurrentDisplayMode.Height;
-            var columns = width / GridSize;
-            var rows = height / GridSize;
 
-            for (var x = 0; x < columns; x++)
+            for (var x = 0; x < _columns; x++)
             {
-                var rectangle = new Rectangle(new Point(x * GridSize, 0), new Point(1, height));
+                var rectangle = new Rectangle(new Point(x * GridSize, 0), new Point(1, _height));
                 batch.Draw(_texture1Px, rectangle, gridColor);
             }
 
-            for (var y = 0; y < rows; y++)
+            for (var y = 0; y < _rows; y++)
             {
-                var rectangle = new Rectangle(new Point(0, y * GridSize), new Point(width, 1));
+                var rectangle = new Rectangle(new Point(0, y * GridSize), new Point(_width, 1));
                 batch.Draw(_texture1Px, rectangle, gridColor);
             }
         }
