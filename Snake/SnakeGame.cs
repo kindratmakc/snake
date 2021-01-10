@@ -78,7 +78,11 @@ namespace Snake
 
             _spriteBatch.Begin();
             _snake.Render(_snakeRenderer);
-            DrawGrid(_spriteBatch);
+
+            if (Environment.GetEnvironmentVariable("GRID_ENABLED") != null)
+            {
+                DrawGrid(_spriteBatch);
+            }
             
             _spriteBatch.End();
 
