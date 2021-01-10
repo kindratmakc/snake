@@ -9,11 +9,11 @@ namespace Snake
     public class Snake
     {
         private IList<Vector2> _parts;
-        private readonly Point _boardSize;
+        private readonly Size _boardSize;
         private Direction _direction;
         private bool _isDead;
 
-        public Snake(IList<Vector2> parts, Point boardSize)
+        public Snake(IList<Vector2> parts, Size boardSize)
         {
             _parts = parts;
             _boardSize = boardSize;
@@ -36,32 +36,26 @@ namespace Snake
 
         public void Move()
         {
-            var newParts = _parts.Select((part, index) =>
-            {
-                if (_isDead)
-                {
-                    return part;
-                }
-                if (index == 0)
-                {
-                    var nextHeadPosition = part + _direction.GetVector();
-
-                    return nextHeadPosition;
-                }
-                
-                return _parts[index - 1].Clone();
-            }).ToList();
-            var newHead = newParts.First();
-            var collidedWithHead = newParts.Skip(1).Where(part => part == newHead);
-            var board = new Rectangle(new Point(0, 0), new Size(_boardSize));
-
-            if (collidedWithHead.Any() || !board.Contains(new Point((int) newHead.X, (int) newHead.Y)))
+            var newParts = _parts.Select((part, index) => index == 0
+                    ? part + _direction.GetVector()
+                    : _parts[index - 1].Clone()
+                ).ToList();
+            if (HasCollisions(newParts))
             {
                 Die();
                 return;
             }
 
             _parts = newParts;
+        }
+
+        private bool HasCollisions(IReadOnlyCollection<Vector2> newParts)
+        {
+            var newHead = newParts.First();
+            var bodyPartsCollidedWithHead = newParts.Skip(1).Where(bodyPart => bodyPart == newHead);
+            var board = new Rectangle(new Point(0, 0), _boardSize);
+
+            return bodyPartsCollidedWithHead.Any() || !board.Contains(new Point((int) newHead.X, (int) newHead.Y));
         }
 
         public IList<Vector2> GetState()

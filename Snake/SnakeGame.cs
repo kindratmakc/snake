@@ -47,7 +47,7 @@ namespace Snake
                     new Vector2Numeric(1, 0),
                     new Vector2Numeric(0, 0),
                 }),
-                new System.Drawing.Point(_columns, _rows));
+                new System.Drawing.Size(_columns, _rows));
             
             
             Console.WriteLine("Width: " + _width);

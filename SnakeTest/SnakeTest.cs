@@ -310,9 +310,9 @@ namespace SnakeTest
                 .OrderBy(item => item.value)
                 .Select(item => new Vector2(item.x, item.y))
                 .ToList();
-            var x = state.Select(subArr => subArr.Length).Max();
+            var columns = state.Select(subArr => subArr.Length).Max();
 
-            return new(parts, new Point(x, state.Length));
+            return new Snake.Snake(parts, new Size(columns, state.Length));
         }
 
         private static void AssertState(string[][] expected, IList<Vector2> actual)
