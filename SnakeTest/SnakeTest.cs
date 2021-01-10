@@ -10,6 +10,27 @@ namespace SnakeTest
     public class SnakeTest
     {
         [Fact]
+        public void CanChaseOwnTail()
+        {
+            var snake = CreateSnake(new[]
+            {
+                new[] {" ", "1", "2"},
+                new[] {" ", "4", "3"},
+                new[] {" ", " ", " "},
+            });
+        
+            snake.Turn(Direction.Down);
+            snake.Move();
+        
+            AssertState(new[]
+            {
+                new[] {" ", "2", "3"},
+                new[] {" ", "1", "4"},
+                new[] {" ", " ", " "},
+            }, snake.GetState());
+        }
+
+        [Fact]
         public void DiesWhenCollidesWithTrail()
         {
             var snake = CreateSnake(new[]

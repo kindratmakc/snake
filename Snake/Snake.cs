@@ -36,7 +36,7 @@ namespace Snake
 
         public void Move()
         {
-            _parts = _parts.Select((part, index) =>
+            var newParts = _parts.Select((part, index) =>
             {
                 if (_isDead)
                 {
@@ -45,25 +45,23 @@ namespace Snake
                 if (index == 0)
                 {
                     var nextHeadPosition = part + _direction.GetVector();
-                    var board = new Rectangle(new Point(0, 0), new Size(_boardSize));
-
-                    if (!board.Contains(new Point((int)nextHeadPosition.X, (int)nextHeadPosition.Y)))
-                    {
-                        Die();
-                        return part;
-                    }
-
-                    if (_parts.Contains(nextHeadPosition))
-                    {
-                        Die();
-                        return part;
-                    }
 
                     return nextHeadPosition;
                 }
                 
                 return _parts[index - 1].Clone();
             }).ToList();
+            var newHead = newParts.First();
+            var collidedWithHead = newParts.Skip(1).Where(part => part == newHead);
+            var board = new Rectangle(new Point(0, 0), new Size(_boardSize));
+
+            if (collidedWithHead.Any() || !board.Contains(new Point((int) newHead.X, (int) newHead.Y)))
+            {
+                Die();
+                return;
+            }
+
+            _parts = newParts;
         }
 
         public IList<Vector2> GetState()
