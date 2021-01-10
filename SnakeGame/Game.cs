@@ -41,7 +41,19 @@ namespace SnakeGame
             _columns = _width / GridSize;
             _rows = _height / GridSize;
 
-            _snake = new Snake(new List<Vector2Numeric>(new[]
+            _snake = CreateSnake();
+
+
+            Console.WriteLine("Width: " + _width);
+            Console.WriteLine("Height: " + _height);
+            Console.WriteLine("Columns(x): " + _columns);
+            Console.WriteLine("Row(y): " + _rows);
+            Console.WriteLine("");
+        }
+
+        private Snake CreateSnake()
+        {
+            return new Snake(new List<Vector2Numeric>(new[]
                 {
                     new Vector2Numeric(5, 0),
                     new Vector2Numeric(4, 0),
@@ -51,13 +63,6 @@ namespace SnakeGame
                     new Vector2Numeric(0, 0),
                 }),
                 new Size(_columns, _rows));
-
-
-            Console.WriteLine("Width: " + _width);
-            Console.WriteLine("Height: " + _height);
-            Console.WriteLine("Columns(x): " + _columns);
-            Console.WriteLine("Row(y): " + _rows);
-            Console.WriteLine("");
         }
 
         protected override void LoadContent()
@@ -148,6 +153,11 @@ namespace SnakeGame
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
                 _isPaused = !_isPaused;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.R))
+            {
+                _snake = CreateSnake();
             }
         }
     }
