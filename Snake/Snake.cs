@@ -53,6 +53,12 @@ namespace Snake
                         return part;
                     }
 
+                    if (_parts.Contains(nextHeadPosition))
+                    {
+                        Die();
+                        return part;
+                    }
+
                     return nextHeadPosition;
                 }
                 

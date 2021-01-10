@@ -10,6 +10,28 @@ namespace SnakeTest
     public class SnakeTest
     {
         [Fact]
+        public void DiesWhenCollidesWithTrail()
+        {
+            var snake = CreateSnake(new[]
+            {
+                new[] {" ", "1", "2"},
+                new[] {"5", "4", "3"},
+                new[] {" ", " ", " "},
+            });
+
+            snake.Turn(Direction.Down);
+            snake.Move();
+        
+            AssertState(new[]
+            {
+                new[] {" ", "1", "2"},
+                new[] {"5", "4", "3"},
+                new[] {" ", " ", " "},
+            }, snake.GetState());
+            Assert.True(snake.IsDead());
+        }
+
+        [Fact]
         public void DiesWhenCollidesWithBorders()
         {
             var snake = CreateSnake(new[]
