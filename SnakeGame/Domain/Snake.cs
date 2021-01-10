@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 
@@ -15,7 +14,7 @@ namespace SnakeGame.Domain
         public Snake(IList<Vector2> parts, Size boardSize)
         {
             _parts = parts;
-            _boardSize = boardSize;
+            _boardSize = new Size(boardSize.Width, boardSize.Height);
             GuessDirection();
         }
 
@@ -52,7 +51,7 @@ namespace SnakeGame.Domain
         {
             var newHead = newParts.First();
             var bodyPartsCollidedWithHead = newParts.Skip(1).Where(bodyPart => bodyPart == newHead);
-            var board = new Rectangle(new Point(0, 0), _boardSize);
+            var board = new Rectangle(_boardSize);
 
             return bodyPartsCollidedWithHead.Any() || !board.Contains(new Point((int) newHead.X, (int) newHead.Y));
         }
@@ -104,7 +103,50 @@ namespace SnakeGame.Domain
         {
             return _isDead;
         }
+        
+        private readonly struct Rectangle
+        {
+            private readonly int _width;
+            private readonly int _height;
+
+            public Rectangle(Size size)
+            {
+                _width = size.Width;
+                _height = size.Height;
+            }
+
+            public bool Contains(Point point)
+            {
+                return point.X >= 0 && point.X < _width && point.Y >= 0 && point.Y < _height;
+            } 
+        }
     }
+
+    public struct Size
+    {
+        public Size(int width, int height)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        public int Width { get; }
+        public int Height { get; }
+    }
+
+    public struct Point
+    {
+        public Point(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public int X { get; }
+        public int Y { get; }
+    }
+
+    
 
     public static class VectorExtension
     {

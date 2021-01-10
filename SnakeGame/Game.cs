@@ -5,6 +5,7 @@ using XnaGame = Microsoft.Xna.Framework.Game;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SnakeGame.Domain;
+using Point = Microsoft.Xna.Framework.Point;
 using Vector2Numeric = System.Numerics.Vector2;
 
 namespace SnakeGame
@@ -49,7 +50,7 @@ namespace SnakeGame
                     new Vector2Numeric(1, 0),
                     new Vector2Numeric(0, 0),
                 }),
-                new System.Drawing.Size(_columns, _rows));
+                new Size(_columns, _rows));
 
 
             Console.WriteLine("Width: " + _width);
