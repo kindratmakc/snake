@@ -125,7 +125,7 @@ namespace SnakeGame.Domain
         }
     }
 
-    public struct Size
+    public readonly struct Size
     {
         public Size(int width, int height)
         {
@@ -137,7 +137,7 @@ namespace SnakeGame.Domain
         public int Height { get; }
     }
 
-    public struct Point
+    public readonly struct Point
     {
         public Point(int x, int y)
         {
