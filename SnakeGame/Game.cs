@@ -24,6 +24,7 @@ namespace SnakeGame
         private int _height;
         private int _columns;
         private int _rows;
+        private KeyboardState _previousState;
 
         public Game()
         {
@@ -35,6 +36,8 @@ namespace SnakeGame
         protected override void Initialize()
         {
             base.Initialize();
+
+            _previousState = Keyboard.GetState();
 
             _width = _graphics.GraphicsDevice.Viewport.Width;
             _height = _graphics.GraphicsDevice.Viewport.Height;
@@ -130,35 +133,41 @@ namespace SnakeGame
 
         private void HandleInput()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            var currentState = Keyboard.GetState();
+            if (!_isPaused)
             {
-                _snake.Turn(Direction.Up);
+                if (currentState.IsKeyDown(Keys.Up))
+                {
+                    _snake.Turn(Direction.Up);
+                }
+
+                if (currentState.IsKeyDown(Keys.Down))
+                {
+                    _snake.Turn(Direction.Down);
+                }
+
+                if (currentState.IsKeyDown(Keys.Left))
+                {
+                    _snake.Turn(Direction.Left);
+                }
+
+                if (currentState.IsKeyDown(Keys.Right))
+                {
+                    _snake.Turn(Direction.Right);
+                }
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
-            {
-                _snake.Turn(Direction.Down);
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
-            {
-                _snake.Turn(Direction.Left);
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
-                _snake.Turn(Direction.Right);
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (currentState.IsKeyDown(Keys.Space) && !_previousState.IsKeyDown(Keys.Space))
             {
                 _isPaused = !_isPaused;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.R))
+            if (currentState.IsKeyDown(Keys.R) && !_previousState.IsKeyDown(Keys.R))
             {
                 _snake = CreateSnake();
             }
+
+            _previousState = currentState;
         }
     }
 }
