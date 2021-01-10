@@ -20,7 +20,7 @@ namespace Snake
 
         public void RenderHead(Vector2Numeric coordinates, Direction direction)
         {
-            _batch.Draw(_texture, coordinates.ToXna() * Step, GetHead(direction), Color.White);
+            Render(coordinates.ToXna() * Step, GetHead(direction));
         }
 
         public void RenderBody(Vector2Numeric coordinates, Direction toPrev, Direction toNext)
@@ -29,12 +29,17 @@ namespace Snake
                 ? GetStraightBody(toPrev)
                 : GetCurvedBody(toPrev, toNext);
             
-            _batch.Draw(_texture, coordinates.ToXna() * Step, rectangle, Color.White);
+            Render(coordinates.ToXna() * Step, rectangle);
         }
 
         public void RenderTail(Vector2Numeric coordinates, Direction direction)
         {
-            _batch.Draw(_texture, coordinates.ToXna() * Step, GetTail(direction), Color.White);
+            Render(coordinates.ToXna() * Step, GetTail(direction));
+        }
+
+        private void Render(Vector2 coordinates, Rectangle sourceRectangle)
+        {
+            _batch.Draw(_texture, coordinates, sourceRectangle, Color.White);
         }
 
         private Rectangle GetHead(Direction direction)
