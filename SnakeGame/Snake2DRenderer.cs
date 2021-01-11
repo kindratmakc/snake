@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SnakeGame.Domain;
+using SnakeRules;
 using Vector2Numeric = System.Numerics.Vector2;
 
 namespace SnakeGame

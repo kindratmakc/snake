@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace SnakeGame.Domain
+namespace SnakeRules
 {
     public enum Direction
     {

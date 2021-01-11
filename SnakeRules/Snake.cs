@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Numerics;
 
-namespace SnakeGame.Domain
+namespace SnakeRules
 {
     public class Snake
     {

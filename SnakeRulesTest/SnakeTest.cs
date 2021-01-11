@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using SnakeGame.Domain;
+using SnakeRules;
 using Xunit;
 
-namespace SnakeTest
+namespace SnakeRulesTest
 {
     public class SnakeTest
     {

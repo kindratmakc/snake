@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using XnaGame = Microsoft.Xna.Framework.Game;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using SnakeGame.Domain;
+using SnakeRules;
 using Point = Microsoft.Xna.Framework.Point;
 using Vector2Numeric = System.Numerics.Vector2;
 
