@@ -25,6 +25,8 @@ namespace SnakeGame
         private int _columns;
         private int _rows;
         private KeyboardState _previousState;
+        private SpriteFont _gameOverFont;
+        private bool _isSnakeDead;
 
         public Game()
         {
@@ -67,6 +69,7 @@ namespace SnakeGame
                 }),
                 new Size(_columns, _rows));
             snake.Died += () => Console.WriteLine("Snake is dead.");
+            snake.Died += () => {_isSnakeDead = true;};
 
             return snake;
         }
@@ -77,6 +80,7 @@ namespace SnakeGame
             _snakeRenderer = new Snake2DRenderer(Content.Load<Texture2D>("pig"), _spriteBatch);
             _texture1Px = new Texture2D(GraphicsDevice, 1, 1);
             _texture1Px.SetData(new[] {Color.White});
+            _gameOverFont = Content.Load<SpriteFont>("game_over");
         }
 
         protected override void Update(GameTime time)
@@ -106,13 +110,24 @@ namespace SnakeGame
 
             _spriteBatch.Begin();
             _snake.Render(_snakeRenderer);
-            DrawGrid(_spriteBatch);
+            DrawGrid();
+            DrawGameOver();
             _spriteBatch.End();
 
             base.Draw(time);
         }
 
-        private void DrawGrid(SpriteBatch batch)
+        private void DrawGameOver()
+        {
+            if (!_isSnakeDead) return;
+
+            const string text = "Game over";
+            var size = _gameOverFont.MeasureString(text);
+            var center = new Vector2((float) _width / 2, (float) _height / 2);
+            _spriteBatch.DrawString(_gameOverFont, text, center - size / 2, Color.Red);
+        }
+
+        private void DrawGrid()
         {
             if (Environment.GetEnvironmentVariable("GRID_ENABLED") == null)
             {
@@ -124,13 +139,13 @@ namespace SnakeGame
             for (var x = 0; x < _columns; x++)
             {
                 var rectangle = new Rectangle(new Point(x * GridSize, 0), new Point(1, _height));
-                batch.Draw(_texture1Px, rectangle, gridColor);
+                _spriteBatch.Draw(_texture1Px, rectangle, gridColor);
             }
 
             for (var y = 0; y < _rows; y++)
             {
                 var rectangle = new Rectangle(new Point(0, y * GridSize), new Point(_width, 1));
-                batch.Draw(_texture1Px, rectangle, gridColor);
+                _spriteBatch.Draw(_texture1Px, rectangle, gridColor);
             }
         }
 
@@ -167,10 +182,16 @@ namespace SnakeGame
 
             if (currentState.IsKeyDown(Keys.R) && !_previousState.IsKeyDown(Keys.R))
             {
-                _snake = CreateSnake();
+                Restart();
             }
 
             _previousState = currentState;
+        }
+
+        private void Restart()
+        {
+            _isSnakeDead = false;
+            _snake = CreateSnake();
         }
     }
 }
