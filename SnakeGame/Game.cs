@@ -68,7 +68,7 @@ namespace SnakeGame
                     new Point(1, 0),
                     new Point(0, 0),
                 }),
-                new Size(_columns, _rows));
+                new Size(_columns, _rows), new List<Point>());
             snake.Died += () => Console.WriteLine("Snake is dead.");
             snake.Died += () => {_isSnakeDead = true;};
 

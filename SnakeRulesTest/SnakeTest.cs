@@ -99,11 +99,11 @@ namespace SnakeRulesTest
             var snake = CreateSnake(new[]
             {
                 new[] {" ", " ", " "},
-                new[] {"2", "1", " "},
+                new[] {"2", "1", "F"},
                 new[] {" ", " ", " "},
             });
 
-            snake.Eat();
+            snake.Move();
         
             AssertState(new[]
             {
@@ -325,13 +325,17 @@ namespace SnakeRulesTest
         private static Snake CreateSnake(string[][] state)
         {
             var parts = state.SelectMany((subArr, y) => subArr.Select((value, x) => new {x, y, value}))
-                .Where(item => item.value != " ")
+                .Where(item => item.value != " " && item.value != "F")
                 .OrderBy(item => item.value)
+                .Select(item => new Point(item.x, item.y))
+                .ToList();
+            var food = state.SelectMany((subArr, y) => subArr.Select((value, x) => new {x, y, value}))
+                .Where(item => item.value == "F")
                 .Select(item => new Point(item.x, item.y))
                 .ToList();
             var columns = state.Select(subArr => subArr.Length).Max();
 
-            return new Snake(parts, new Size(columns, state.Length));
+            return new Snake(parts, new Size(columns, state.Length), food);
         }
 
         private static void AssertState(string[][] expected, IList<Point> actual)

@@ -7,25 +7,21 @@ namespace SnakeRules
     public class Snake
     {
         private IList<Point> _parts;
+        private readonly IList<Point> _food;
         private readonly Size _boardSize;
         private Direction _direction;
         private bool _isDead;
 
         public delegate void DeathHandler();
+
         public event DeathHandler Died;
 
-        public Snake(IList<Point> parts, Size boardSize)
+        public Snake(IList<Point> parts, Size boardSize, IList<Point> food)
         {
             _parts = parts;
+            _food = food;
             _boardSize = new Size(boardSize.Width, boardSize.Height);
             GuessDirection();
-        }
-
-        public void Eat()
-        {
-            var tail = _parts.Last().Clone();
-            Move();
-            _parts.Add(tail);
         }
 
         public void Turn(Direction direction)
@@ -38,11 +34,17 @@ namespace SnakeRules
         public void Move()
         {
             if (_isDead) return;
-
+            
             var newParts = _parts.Select((part, index) => index == 0
-                    ? part + _direction.GetPoint()
-                    : _parts[index - 1].Clone()
-                ).ToList();
+                ? part + _direction.GetPoint()
+                : _parts[index - 1]
+            ).ToList();
+            var newHead = newParts.First();
+            var foodCollidedWithHead = _food.Where(item => item == newHead);
+            if (foodCollidedWithHead.Any())
+            {
+                newParts.Add(GetTail());
+            }
 
             if (HasCollisions(newParts))
             {
@@ -76,17 +78,17 @@ namespace SnakeRules
                     renderer.RenderHead(part, (GetHead() - GetNextToHead()).GetDirection());
                     continue;
                 }
-            
+
                 if (_parts.IndexOf(part) == _parts.Count - 1)
                 {
                     var previous = _parts.ElementAt(_parts.IndexOf(part) - 1);
                     renderer.RenderTail(part, (previous - part).GetDirection());
                     continue;
                 }
-            
+
                 var toPrev = (_parts.ElementAt(_parts.IndexOf(part) - 1) - part).GetDirection();
                 var toNext = (_parts.ElementAt(_parts.IndexOf(part) + 1) - part).GetDirection();
-                
+
                 renderer.RenderBody(part, toPrev, toNext);
             }
         }
@@ -103,14 +105,14 @@ namespace SnakeRules
         }
 
         private Point GetHead() => _parts.First();
-
         private Point GetNextToHead() => _parts.ElementAt(1);
+        private Point GetTail() => _parts.Last();
 
         public bool IsDead()
         {
             return _isDead;
         }
-        
+
         private readonly struct Rectangle
         {
             private readonly int _width;
@@ -125,7 +127,7 @@ namespace SnakeRules
             public bool Contains(Point point)
             {
                 return point.X >= 0 && point.X < _width && point.Y >= 0 && point.Y < _height;
-            } 
+            }
         }
     }
 
@@ -151,12 +153,7 @@ namespace SnakeRules
 
         public int X { get; }
         public int Y { get; }
-        
-        public Point Clone()
-        {
-            return new(X, Y);
-        }
-        
+
         public Direction GetDirection()
         {
             return this switch
