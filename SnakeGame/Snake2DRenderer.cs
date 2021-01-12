@@ -21,7 +21,7 @@ namespace SnakeGame
 
         public void RenderHead(Point coordinates, Direction direction)
         {
-            Render(coordinates.ToXna() * Step, GetHead(direction));
+            Render(coordinates.ToXnaVector() * Step, GetHead(direction));
         }
 
         public void RenderBody(Point coordinates, Direction toPrev, Direction toNext)
@@ -30,12 +30,12 @@ namespace SnakeGame
                 ? GetStraightBody(toPrev)
                 : GetCurvedBody(toPrev, toNext);
             
-            Render(coordinates.ToXna() * Step, rectangle);
+            Render(coordinates.ToXnaVector() * Step, rectangle);
         }
 
         public void RenderTail(Point coordinates, Direction direction)
         {
-            Render(coordinates.ToXna() * Step, GetTail(direction));
+            Render(coordinates.ToXnaVector() * Step, GetTail(direction));
         }
 
         private void Render(Vector2 coordinates, Rectangle sourceRectangle)
@@ -43,7 +43,7 @@ namespace SnakeGame
             _batch.Draw(_texture, coordinates, sourceRectangle, Color.White);
         }
 
-        private Rectangle GetHead(Direction direction)
+        private static Rectangle GetHead(Direction direction)
         {
             return direction switch
             {
@@ -55,7 +55,7 @@ namespace SnakeGame
             };
         }
 
-        private Rectangle GetCurvedBody(Direction prev, Direction next)
+        private static Rectangle GetCurvedBody(Direction prev, Direction next)
         {
             const int row = Step * 2;
 
@@ -72,7 +72,7 @@ namespace SnakeGame
             };
         }
 
-        private Rectangle GetStraightBody(Direction direction)
+        private static Rectangle GetStraightBody(Direction direction)
         {
             const int row = Step;
             
@@ -103,7 +103,7 @@ namespace SnakeGame
 
     public static class PointExtension
     {
-        public static Vector2 ToXna(this Point point)
+        public static Vector2 ToXnaVector(this Point point)
         {
             return new(point.X, point.Y);
         }
