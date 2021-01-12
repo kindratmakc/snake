@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace SnakeRules
 {
     public class Snake
     {
-        private IList<Vector2> _parts;
+        private IList<Point> _parts;
         private readonly Size _boardSize;
         private Direction _direction;
         private bool _isDead;
@@ -14,7 +14,7 @@ namespace SnakeRules
         public delegate void DeathHandler();
         public event DeathHandler Died;
 
-        public Snake(IList<Vector2> parts, Size boardSize)
+        public Snake(IList<Point> parts, Size boardSize)
         {
             _parts = parts;
             _boardSize = new Size(boardSize.Width, boardSize.Height);
@@ -30,7 +30,7 @@ namespace SnakeRules
 
         public void Turn(Direction direction)
         {
-            if (GetNextToHead() == GetHead() + direction.GetVector()) return;
+            if (GetNextToHead() == GetHead() + direction.GetPoint()) return;
 
             _direction = direction;
         }
@@ -40,7 +40,7 @@ namespace SnakeRules
             if (_isDead) return;
 
             var newParts = _parts.Select((part, index) => index == 0
-                    ? part + _direction.GetVector()
+                    ? part + _direction.GetPoint()
                     : _parts[index - 1].Clone()
                 ).ToList();
 
@@ -53,16 +53,16 @@ namespace SnakeRules
             _parts = newParts;
         }
 
-        private bool HasCollisions(IReadOnlyCollection<Vector2> newParts)
+        private bool HasCollisions(IReadOnlyCollection<Point> newParts)
         {
             var newHead = newParts.First();
             var bodyPartsCollidedWithHead = newParts.Skip(1).Where(bodyPart => bodyPart == newHead);
             var board = new Rectangle(_boardSize);
 
-            return bodyPartsCollidedWithHead.Any() || !board.Contains(new Point((int) newHead.X, (int) newHead.Y));
+            return bodyPartsCollidedWithHead.Any() || !board.Contains(new Point(newHead.X, newHead.Y));
         }
 
-        public IList<Vector2> GetState()
+        public IList<Point> GetState()
         {
             return _parts;
         }
@@ -76,14 +76,14 @@ namespace SnakeRules
                     renderer.RenderHead(part, (GetHead() - GetNextToHead()).GetDirection());
                     continue;
                 }
-
+            
                 if (_parts.IndexOf(part) == _parts.Count - 1)
                 {
                     var previous = _parts.ElementAt(_parts.IndexOf(part) - 1);
                     renderer.RenderTail(part, (previous - part).GetDirection());
                     continue;
                 }
-
+            
                 var toPrev = (_parts.ElementAt(_parts.IndexOf(part) - 1) - part).GetDirection();
                 var toNext = (_parts.ElementAt(_parts.IndexOf(part) + 1) - part).GetDirection();
                 
@@ -102,9 +102,9 @@ namespace SnakeRules
             _direction = (GetHead() - GetNextToHead()).GetDirection();
         }
 
-        private Vector2 GetHead() => _parts.First();
+        private Point GetHead() => _parts.First();
 
-        private Vector2 GetNextToHead() => _parts.ElementAt(1);
+        private Point GetNextToHead() => _parts.ElementAt(1);
 
         public bool IsDead()
         {
@@ -151,22 +151,34 @@ namespace SnakeRules
 
         public int X { get; }
         public int Y { get; }
-    }
-
-    
-
-    public static class VectorExtension
-    {
-        public static Vector2 Clone(this Vector2 vector)
+        
+        public Point Clone()
         {
-            return new(vector.X, vector.Y);
+            return new(X, Y);
         }
+        
+        public Direction GetDirection()
+        {
+            return this switch
+            {
+                {X: 0, Y: -1} => Direction.Up,
+                {X: 0, Y: 1} => Direction.Down,
+                {X: 1, Y: 0} => Direction.Right,
+                {X: -1, Y: 0} => Direction.Left,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+        }
+
+        public static Point operator +(Point a, Point b) => new(a.X + b.X, a.Y + b.Y);
+        public static Point operator -(Point a, Point b) => new(a.X - b.X, a.Y - b.Y);
+        public static bool operator ==(Point a, Point b) => a.X == b.X && a.Y == b.Y;
+        public static bool operator !=(Point a, Point b) => a.X != b.X || a.Y != b.Y;
     }
-    
+
     public interface ISnakeRenderer
     {
-        public void RenderHead(Vector2 coordinates, Direction direction);
-        public void RenderBody(Vector2 coordinates, Direction toPrev, Direction toNext);
-        public void RenderTail(Vector2 coordinates, Direction direction);
+        public void RenderHead(Point coordinates, Direction direction);
+        public void RenderBody(Point coordinates, Direction toPrev, Direction toNext);
+        public void RenderTail(Point coordinates, Direction direction);
     }
 }

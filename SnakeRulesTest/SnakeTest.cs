@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using SnakeRules;
 using Xunit;
 
@@ -325,18 +324,17 @@ namespace SnakeRulesTest
         
         private static Snake CreateSnake(string[][] state)
         {
-            
             var parts = state.SelectMany((subArr, y) => subArr.Select((value, x) => new {x, y, value}))
                 .Where(item => item.value != " ")
                 .OrderBy(item => item.value)
-                .Select(item => new Vector2(item.x, item.y))
+                .Select(item => new Point(item.x, item.y))
                 .ToList();
             var columns = state.Select(subArr => subArr.Length).Max();
 
             return new Snake(parts, new Size(columns, state.Length));
         }
 
-        private static void AssertState(string[][] expected, IList<Vector2> actual)
+        private static void AssertState(string[][] expected, IList<Point> actual)
         {
             var actualMatrix = new string[expected.Length][];
             for (int i = 0; i < expected.Length; i++)
@@ -344,10 +342,9 @@ namespace SnakeRulesTest
                 actualMatrix[i] = Enumerable.Repeat(" ", expected[i].Length).ToArray();
             }
 
-
             foreach (var part in actual)
             {
-                actualMatrix[(int) part.Y][(int) part.X] = (actual.IndexOf(part) + 1).ToString();
+                actualMatrix[part.Y][part.X] = (actual.IndexOf(part) + 1).ToString();
             }
 
             Assert.Equal(expected, actualMatrix);

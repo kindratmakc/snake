@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SnakeRules;
-using Vector2Numeric = System.Numerics.Vector2;
+using Point = SnakeRules.Point;
 
 namespace SnakeGame
 {
@@ -19,12 +19,12 @@ namespace SnakeGame
             _batch = batch;
         }
 
-        public void RenderHead(Vector2Numeric coordinates, Direction direction)
+        public void RenderHead(Point coordinates, Direction direction)
         {
             Render(coordinates.ToXna() * Step, GetHead(direction));
         }
 
-        public void RenderBody(Vector2Numeric coordinates, Direction toPrev, Direction toNext)
+        public void RenderBody(Point coordinates, Direction toPrev, Direction toNext)
         {
             var rectangle = toPrev.IsOppositeTo(toNext)
                 ? GetStraightBody(toPrev)
@@ -33,7 +33,7 @@ namespace SnakeGame
             Render(coordinates.ToXna() * Step, rectangle);
         }
 
-        public void RenderTail(Vector2Numeric coordinates, Direction direction)
+        public void RenderTail(Point coordinates, Direction direction)
         {
             Render(coordinates.ToXna() * Step, GetTail(direction));
         }
@@ -101,11 +101,11 @@ namespace SnakeGame
         }
     }
 
-    public static class Vector2NumericExtension
+    public static class PointExtension
     {
-        public static Vector2 ToXna(this Vector2Numeric vector2Numeric)
+        public static Vector2 ToXna(this Point point)
         {
-            return new(vector2Numeric.X, vector2Numeric.Y);
+            return new(point.X, point.Y);
         }
     }
 }

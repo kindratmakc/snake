@@ -5,7 +5,8 @@ using XnaGame = Microsoft.Xna.Framework.Game;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SnakeRules;
-using Point = Microsoft.Xna.Framework.Point;
+using Point = SnakeRules.Point;
+using XnaPoint = Microsoft.Xna.Framework.Point;
 using Vector2Numeric = System.Numerics.Vector2;
 
 namespace SnakeGame
@@ -58,14 +59,14 @@ namespace SnakeGame
         private Snake CreateSnake()
         {
             Console.WriteLine("Snake is created.");
-            var snake = new Snake(new List<Vector2Numeric>(new[]
+            var snake = new Snake(new List<Point>(new[]
                 {
-                    new Vector2Numeric(5, 0),
-                    new Vector2Numeric(4, 0),
-                    new Vector2Numeric(3, 0),
-                    new Vector2Numeric(2, 0),
-                    new Vector2Numeric(1, 0),
-                    new Vector2Numeric(0, 0),
+                    new Point(5, 0),
+                    new Point(4, 0),
+                    new Point(3, 0),
+                    new Point(2, 0),
+                    new Point(1, 0),
+                    new Point(0, 0),
                 }),
                 new Size(_columns, _rows));
             snake.Died += () => Console.WriteLine("Snake is dead.");
@@ -138,13 +139,13 @@ namespace SnakeGame
 
             for (var x = 0; x < _columns; x++)
             {
-                var rectangle = new Rectangle(new Point(x * GridSize, 0), new Point(1, _height));
+                var rectangle = new Rectangle(new XnaPoint(x * GridSize, 0), new XnaPoint(1, _height));
                 _spriteBatch.Draw(_texture1Px, rectangle, gridColor);
             }
 
             for (var y = 0; y < _rows; y++)
             {
-                var rectangle = new Rectangle(new Point(0, y * GridSize), new Point(_width, 1));
+                var rectangle = new Rectangle(new XnaPoint(0, y * GridSize), new XnaPoint(_width, 1));
                 _spriteBatch.Draw(_texture1Px, rectangle, gridColor);
             }
         }
