@@ -78,7 +78,7 @@ namespace SnakeGame
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _snakeRenderer = new Snake2DRenderer(Content.Load<Texture2D>("pig"), _spriteBatch);
+            _snakeRenderer = new Snake2DRenderer(Content.Load<Texture2D>("pig"), _spriteBatch, Content.Load<SpriteFont>("food"));
             _texture1Px = new Texture2D(GraphicsDevice, 1, 1);
             _texture1Px.SetData(new[] {Color.White});
             _gameOverFont = Content.Load<SpriteFont>("game_over");
@@ -110,7 +110,7 @@ namespace SnakeGame
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            _snake.Render(_snakeRenderer);
+            _snake.Render(_snakeRenderer, _snakeRenderer);
             DrawGrid();
             DrawGameOver();
             _spriteBatch.End();

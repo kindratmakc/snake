@@ -69,27 +69,32 @@ namespace SnakeRules
             return new(_parts, _food);
         }
 
-        public void Render(ISnakeRenderer renderer)
+        public void Render(ISnakeRenderer snakeRenderer, IFoodRenderer foodRenderer)
         {
             foreach (var part in _parts)
             {
                 if (_parts.IndexOf(part) == 0)
                 {
-                    renderer.RenderHead(part, (GetHead() - GetNextToHead()).GetDirection());
+                    snakeRenderer.RenderHead(part, (GetHead() - GetNextToHead()).GetDirection());
                     continue;
                 }
 
                 if (_parts.IndexOf(part) == _parts.Count - 1)
                 {
                     var previous = _parts.ElementAt(_parts.IndexOf(part) - 1);
-                    renderer.RenderTail(part, (previous - part).GetDirection());
+                    snakeRenderer.RenderTail(part, (previous - part).GetDirection());
                     continue;
                 }
 
                 var toPrev = (_parts.ElementAt(_parts.IndexOf(part) - 1) - part).GetDirection();
                 var toNext = (_parts.ElementAt(_parts.IndexOf(part) + 1) - part).GetDirection();
 
-                renderer.RenderBody(part, toPrev, toNext);
+                snakeRenderer.RenderBody(part, toPrev, toNext);
+            }
+
+            if (_food is {} food)
+            {
+                foodRenderer.Render(food);
             }
         }
 
@@ -191,5 +196,10 @@ namespace SnakeRules
         public void RenderHead(Point coordinates, Direction direction);
         public void RenderBody(Point coordinates, Direction toPrev, Direction toNext);
         public void RenderTail(Point coordinates, Direction direction);
+    }
+
+    public interface IFoodRenderer
+    {
+        public void Render(Point coordinates);
     }
 }

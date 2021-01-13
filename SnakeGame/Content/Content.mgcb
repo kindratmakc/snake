@@ -13,6 +13,13 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin food.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:food.spritefont
+
 #begin game_over.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

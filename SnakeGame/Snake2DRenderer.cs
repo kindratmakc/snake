@@ -6,17 +6,19 @@ using Point = SnakeRules.Point;
 
 namespace SnakeGame
 {
-    public class Snake2DRenderer : ISnakeRenderer
+    public class Snake2DRenderer : ISnakeRenderer, IFoodRenderer
     {
         private const int Step = 32;
 
         private readonly Texture2D _texture;
         private readonly SpriteBatch _batch;
+        private readonly SpriteFont _foodFont;
 
-        public Snake2DRenderer(Texture2D texture, SpriteBatch batch)
+        public Snake2DRenderer(Texture2D texture, SpriteBatch batch, SpriteFont foodFont)
         {
             _texture = texture;
             _batch = batch;
+            _foodFont = foodFont;
         }
 
         public void RenderHead(Point coordinates, Direction direction)
@@ -98,6 +100,11 @@ namespace SnakeGame
                 Direction.Left => new Rectangle(Step, row, Step, Step),
                 _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null),
             };
+        }
+
+        public void Render(Point coordinates)
+        {
+            _batch.DrawString(_foodFont, "F", coordinates.ToXnaVector() * Step, Color.Black);
         }
     }
 
