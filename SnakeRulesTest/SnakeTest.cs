@@ -12,7 +12,7 @@ namespace SnakeRulesTest
         {
             var snake = CreateSnake(new[]
             {
-                new[] {" ", " ", " "},
+                new[] {"F", " ", " "},
                 new[] {"3", "2", "1"},
                 new[] {" ", " ", " "},
             });
@@ -23,7 +23,7 @@ namespace SnakeRulesTest
         
             AssertState(new[]
             {
-                new[] {" ", " ", " "},
+                new[] {"F", " ", " "},
                 new[] {"3", "2", "1"},
                 new[] {" ", " ", " "},
             }, snake.GetState());
@@ -34,7 +34,7 @@ namespace SnakeRulesTest
         {
             var snake = CreateSnake(new[]
             {
-                new[] {" ", "1", "2"},
+                new[] {"F", "1", "2"},
                 new[] {" ", "4", "3"},
                 new[] {" ", " ", " "},
             });
@@ -44,7 +44,7 @@ namespace SnakeRulesTest
         
             AssertState(new[]
             {
-                new[] {" ", "2", "3"},
+                new[] {"F", "2", "3"},
                 new[] {" ", "1", "4"},
                 new[] {" ", " ", " "},
             }, snake.GetState());
@@ -55,7 +55,7 @@ namespace SnakeRulesTest
         {
             var snake = CreateSnake(new[]
             {
-                new[] {" ", "1", "2"},
+                new[] {"F", "1", "2"},
                 new[] {"5", "4", "3"},
                 new[] {" ", " ", " "},
             });
@@ -65,7 +65,7 @@ namespace SnakeRulesTest
         
             AssertState(new[]
             {
-                new[] {" ", "1", "2"},
+                new[] {"F", "1", "2"},
                 new[] {"5", "4", "3"},
                 new[] {" ", " ", " "},
             }, snake.GetState());
@@ -77,7 +77,7 @@ namespace SnakeRulesTest
         {
             var snake = CreateSnake(new[]
             {
-                new[] {" ", " ", " "},
+                new[] {"F", " ", " "},
                 new[] {"3", "2", "1"},
                 new[] {" ", " ", " "},
             });
@@ -86,7 +86,7 @@ namespace SnakeRulesTest
         
             AssertState(new[]
             {
-                new[] {" ", " ", " "},
+                new[] {"F", " ", " "},
                 new[] {"3", "2", "1"},
                 new[] {" ", " ", " "},
             }, snake.GetState());
@@ -114,11 +114,34 @@ namespace SnakeRulesTest
         }
         
         [Fact]
+        public void FoodIsDisappearedWhenEaten()
+        {
+            var snake = CreateSnake(new[]
+            {
+                new[] {" ", " ", " ", " ", " ", " "},
+                new[] {"2", "1", "F", " ", " ", " "},
+                new[] {" ", " ", " ", " ", " ", " "},
+            });
+
+            snake.Move();
+            snake.Move();
+            snake.Move();
+            snake.Move();
+        
+            AssertState(new[]
+            {
+                new[] {" ", " ", " ", " ", " ", " "},
+                new[] {" ", " ", " ", "3", "2", "1"},
+                new[] {" ", " ", " ", " ", " ", " "},
+            }, snake.GetState());
+        }
+        
+        [Fact]
         public void MovesUpAndForward()
         {
             var snake = CreateSnake(new[]
             {
-                new[] {" ", " ", " "},
+                new[] {"F", " ", " "},
                 new[] {" ", " ", " "},
                 new[] {"3", "2", "1"},
             });
@@ -129,7 +152,7 @@ namespace SnakeRulesTest
         
             AssertState(new[]
             {
-                new[] {" ", " ", "1"},
+                new[] {"F", " ", "1"},
                 new[] {" ", " ", "2"},
                 new[] {" ", " ", "3"},
             }, snake.GetState());
@@ -140,7 +163,7 @@ namespace SnakeRulesTest
         {
             var snake = CreateSnake(new[]
             {
-                new[] {" ", " ", " "},
+                new[] {"F", " ", " "},
                 new[] {" ", " ", " "},
                 new[] {"3", "2", "1"},
             });
@@ -151,7 +174,7 @@ namespace SnakeRulesTest
         
             AssertState(new[]
             {
-                new[] {" ", " ", " "},
+                new[] {"F", " ", " "},
                 new[] {" ", " ", "1"},
                 new[] {" ", "3", "2"},
             }, snake.GetState());
@@ -188,17 +211,17 @@ namespace SnakeRulesTest
                     "forward vertically down",
                     new[]
                     {
-                        new[] {"3", " ", " "},
-                        new[] {"2", " ", " "},
-                        new[] {"1", " ", " "},
+                        new[] {"F", "3", " "},
+                        new[] {" ", "2", " "},
+                        new[] {" ", "1", " "},
                         new[] {" ", " ", " "},
                     },
                     new[]
                     {
-                        new[] {" ", " ", " "},
-                        new[] {"3", " ", " "},
-                        new[] {"2", " ", " "},
-                        new[] {"1", " ", " "},
+                        new[] {"F", " ", " "},
+                        new[] {" ", "3", " "},
+                        new[] {" ", "2", " "},
+                        new[] {" ", "1", " "},
                     },
                 },
                 new object[]
@@ -206,16 +229,16 @@ namespace SnakeRulesTest
                     "forward vertically up",
                     new[]
                     {
-                        new[] {" ", " ", " "},
-                        new[] {"1", " ", " "},
-                        new[] {"2", " ", " "},
-                        new[] {"3", " ", " "},
+                        new[] {"F", " ", " "},
+                        new[] {" ", "1", " "},
+                        new[] {" ", "2", " "},
+                        new[] {" ", "3", " "},
                     },
                     new[]
                     {
-                        new[] {"1", " ", " "},
-                        new[] {"2", " ", " "},
-                        new[] {"3", " ", " "},
+                        new[] {"F", "1", " "},
+                        new[] {" ", "2", " "},
+                        new[] {" ", "3", " "},
                         new[] {" ", " ", " "},
                     },
                 },
@@ -224,13 +247,13 @@ namespace SnakeRulesTest
                     "forward horizontally left",
                     new[]
                     {
-                        new[] {" ", " ", " ", " "},
+                        new[] {"F", " ", " ", " "},
                         new[] {" ", "1", "2", "3"},
                         new[] {" ", " ", " ", " "},
                     },
                     new[]
                     {
-                        new[] {" ", " ", " ", " "},
+                        new[] {"F", " ", " ", " "},
                         new[] {"1", "2", "3", " "},
                         new[] {" ", " ", " ", " "},
                     },
@@ -240,13 +263,13 @@ namespace SnakeRulesTest
                     "forward horizontally right",
                     new[]
                     {
-                        new[] {" ", " ", " ", " "},
+                        new[] {"F", " ", " ", " "},
                         new[] {"3", "2", "1", " "},
                         new[] {" ", " ", " ", " "},
                     },
                     new[]
                     {
-                        new[] {" ", " ", " ", " "},
+                        new[] {"F", " ", " ", " "},
                         new[] {" ", "3", "2", "1"},
                         new[] {" ", " ", " ", " "},
                     },
@@ -261,13 +284,13 @@ namespace SnakeRulesTest
                     Direction.Left,
                     new[]
                     {
-                        new[] {" ", "3", " "},
+                        new[] {"F", "3", " "},
                         new[] {" ", "2", " "},
                         new[] {" ", "1", " "},
                     },
                     new[]
                     {
-                        new[] {" ", " ", " "},
+                        new[] {"F", " ", " "},
                         new[] {" ", "3", " "},
                         new[] {"1", "2", " "},
                     },
@@ -277,15 +300,15 @@ namespace SnakeRulesTest
                     Direction.Right,
                     new[]
                     {
-                        new[] {"3", " ", " "},
-                        new[] {"2", " ", " "},
-                        new[] {"1", " ", " "},
+                        new[] {"F", "3", " "},
+                        new[] {" ", "2", " "},
+                        new[] {" ", "1", " "},
                     },
                     new[]
                     {
-                        new[] {" ", " ", " "},
-                        new[] {"3", " ", " "},
-                        new[] {"2", "1", " "},
+                        new[] {"F", " ", " "},
+                        new[] {" ", "3", " "},
+                        new[] {" ", "2", "1"},
                     },
                 },
                 new object[]
@@ -293,15 +316,15 @@ namespace SnakeRulesTest
                     Direction.Down,
                     new[]
                     {
+                        new[] {"F", " ", " "},
                         new[] {"3", "2", "1"},
-                        new[] {" ", " ", " "},
                         new[] {" ", " ", " "},
                     },
                     new[]
                     {
+                        new[] {"F", " ", " "},
                         new[] {" ", "3", "2"},
                         new[] {" ", " ", "1"},
-                        new[] {" ", " ", " "},
                     },
                 },
                 new object[]
@@ -309,13 +332,13 @@ namespace SnakeRulesTest
                     Direction.Up,
                     new[]
                     {
-                        new[] {" ", " ", " "},
+                        new[] {"F", " ", " "},
                         new[] {"3", "2", "1"},
                         new[] {" ", " ", " "},
                     },
                     new[]
                     {
-                        new[] {" ", " ", "1"},
+                        new[] {"F", " ", "1"},
                         new[] {" ", "3", "2"},
                         new[] {" ", " ", " "},
                     },
@@ -332,26 +355,38 @@ namespace SnakeRulesTest
             var food = state.SelectMany((subArr, y) => subArr.Select((value, x) => new {x, y, value}))
                 .Where(item => item.value == "F")
                 .Select(item => new Point(item.x, item.y))
-                .ToList();
+                .FirstOrDefault();
             var columns = state.Select(subArr => subArr.Length).Max();
 
             return new Snake(parts, new Size(columns, state.Length), food);
         }
 
-        private static void AssertState(string[][] expected, IList<Point> actual)
+        private static void AssertState(string[][] expected, State actual)
         {
-            var actualMatrix = new string[expected.Length][];
-            for (int i = 0; i < expected.Length; i++)
+            var width = expected.Length;
+            var height = expected.Select(subArr => subArr.Length).Max();
+            Assert.Equal(expected, RenderMatrix(actual, width, height));
+        }
+
+        private static string[][] RenderMatrix(State state, int width, int height)
+        {
+            var actualMatrix = new string[width][];
+            for (var i = 0; i < width; i++)
             {
-                actualMatrix[i] = Enumerable.Repeat(" ", expected[i].Length).ToArray();
+                actualMatrix[i] = Enumerable.Repeat(" ", height).ToArray();
             }
 
-            foreach (var part in actual)
+            foreach (var part in state.BodyParts)
             {
-                actualMatrix[part.Y][part.X] = (actual.IndexOf(part) + 1).ToString();
+                actualMatrix[part.Y][part.X] = (state.BodyParts.IndexOf(part) + 1).ToString();
             }
 
-            Assert.Equal(expected, actualMatrix);
+            if (state.Food is {} food)
+            {
+                actualMatrix[food.Y][food.X] = "F";
+            }
+
+            return actualMatrix;
         }
     }
 }

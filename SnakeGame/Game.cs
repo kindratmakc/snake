@@ -61,14 +61,14 @@ namespace SnakeGame
             Console.WriteLine("Snake is created.");
             var snake = new Snake(new List<Point>(new[]
                 {
-                    new Point(5, 0),
-                    new Point(4, 0),
-                    new Point(3, 0),
-                    new Point(2, 0),
-                    new Point(1, 0),
-                    new Point(0, 0),
+                    new Point(5, 1),
+                    new Point(4, 1),
+                    new Point(3, 1),
+                    new Point(2, 1),
+                    new Point(1, 1),
+                    new Point(0, 1),
                 }),
-                new Size(_columns, _rows), new List<Point>());
+                new Size(_columns, _rows), Point.Zero);
             snake.Died += () => Console.WriteLine("Snake is dead.");
             snake.Died += () => {_isSnakeDead = true;};
 

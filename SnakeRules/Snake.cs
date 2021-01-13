@@ -7,7 +7,7 @@ namespace SnakeRules
     public class Snake
     {
         private IList<Point> _parts;
-        private readonly IList<Point> _food;
+        private Point? _food;
         private readonly Size _boardSize;
         private Direction _direction;
         private bool _isDead;
@@ -16,7 +16,7 @@ namespace SnakeRules
 
         public event DeathHandler Died;
 
-        public Snake(IList<Point> parts, Size boardSize, IList<Point> food)
+        public Snake(IList<Point> parts, Size boardSize, Point food = new())
         {
             _parts = parts;
             _food = food;
@@ -40,10 +40,10 @@ namespace SnakeRules
                 : _parts[index - 1]
             ).ToList();
             var newHead = newParts.First();
-            var foodCollidedWithHead = _food.Where(item => item == newHead);
-            if (foodCollidedWithHead.Any())
+            if (_food == newHead)
             {
                 newParts.Add(GetTail());
+                _food = null;
             }
 
             if (HasCollisions(newParts))
@@ -64,9 +64,9 @@ namespace SnakeRules
             return bodyPartsCollidedWithHead.Any() || !board.Contains(new Point(newHead.X, newHead.Y));
         }
 
-        public IList<Point> GetState()
+        public State GetState()
         {
-            return _parts;
+            return new(_parts, _food);
         }
 
         public void Render(ISnakeRenderer renderer)
@@ -145,6 +145,8 @@ namespace SnakeRules
 
     public readonly struct Point
     {
+        public static readonly Point Zero = new(0, 0);
+
         public Point(int x, int y)
         {
             X = x;
@@ -170,6 +172,18 @@ namespace SnakeRules
         public static Point operator -(Point a, Point b) => new(a.X - b.X, a.Y - b.Y);
         public static bool operator ==(Point a, Point b) => a.X == b.X && a.Y == b.Y;
         public static bool operator !=(Point a, Point b) => a.X != b.X || a.Y != b.Y;
+    }
+
+    public class State
+    {
+        public State(IList<Point> bodyParts, Point? food)
+        {
+            BodyParts = bodyParts;
+            Food = food;
+        }
+
+        public IList<Point> BodyParts { get; }
+        public Point? Food { get; }
     }
 
     public interface ISnakeRenderer
