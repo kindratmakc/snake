@@ -16,19 +16,19 @@ namespace SnakeRulesTest
                 new[] {"3", "2", "1"},
                 new[] {" ", " ", " "},
             });
-        
+
             snake.Move();
             snake.Turn(Direction.Down);
             snake.Move();
-        
+
             AssertState(new[]
             {
                 new[] {"F", " ", " "},
                 new[] {"3", "2", "1"},
                 new[] {" ", " ", " "},
-            }, snake.GetState());
+            }, snake);
         }
-        
+
         [Fact]
         public void CanChaseOwnTail()
         {
@@ -38,16 +38,16 @@ namespace SnakeRulesTest
                 new[] {" ", "4", "3"},
                 new[] {" ", " ", " "},
             });
-        
+
             snake.Turn(Direction.Down);
             snake.Move();
-        
+
             AssertState(new[]
             {
                 new[] {"F", "2", "3"},
                 new[] {" ", "1", "4"},
                 new[] {" ", " ", " "},
-            }, snake.GetState());
+            }, snake);
         }
 
         [Fact]
@@ -62,13 +62,13 @@ namespace SnakeRulesTest
 
             snake.Turn(Direction.Down);
             snake.Move();
-        
+
             AssertState(new[]
             {
                 new[] {"F", "1", "2"},
                 new[] {"5", "4", "3"},
                 new[] {" ", " ", " "},
-            }, snake.GetState());
+            }, snake);
             Assert.True(snake.IsDead());
         }
 
@@ -83,16 +83,16 @@ namespace SnakeRulesTest
             });
 
             snake.Move();
-        
+
             AssertState(new[]
             {
                 new[] {"F", " ", " "},
                 new[] {"3", "2", "1"},
                 new[] {" ", " ", " "},
-            }, snake.GetState());
+            }, snake);
             Assert.True(snake.IsDead());
         }
-        
+
         [Fact]
         public void BecomesLongerWhenEats()
         {
@@ -104,15 +104,15 @@ namespace SnakeRulesTest
             });
 
             snake.Move();
-        
+
             AssertState(new[]
             {
                 new[] {" ", " ", " "},
                 new[] {"3", "2", "1"},
                 new[] {" ", " ", " "},
-            }, snake.GetState());
+            }, snake);
         }
-        
+
         [Fact]
         public void FoodIsDisappearedWhenEaten()
         {
@@ -127,15 +127,15 @@ namespace SnakeRulesTest
             snake.Move();
             snake.Move();
             snake.Move();
-        
+
             AssertState(new[]
             {
                 new[] {" ", " ", " ", " ", " ", " "},
                 new[] {" ", " ", " ", "3", "2", "1"},
                 new[] {" ", " ", " ", " ", " ", " "},
-            }, snake.GetState());
+            }, snake);
         }
-        
+
         [Fact]
         public void MovesUpAndForward()
         {
@@ -145,17 +145,17 @@ namespace SnakeRulesTest
                 new[] {" ", " ", " "},
                 new[] {"3", "2", "1"},
             });
-        
+
             snake.Turn(Direction.Up);
             snake.Move();
             snake.Move();
-        
+
             AssertState(new[]
             {
                 new[] {"F", " ", "1"},
                 new[] {" ", " ", "2"},
                 new[] {" ", " ", "3"},
-            }, snake.GetState());
+            }, snake);
         }
 
         [Fact]
@@ -167,17 +167,17 @@ namespace SnakeRulesTest
                 new[] {" ", " ", " "},
                 new[] {"3", "2", "1"},
             });
-        
+
             snake.Turn(Direction.Up);
             snake.Turn(Direction.Left);
             snake.Move();
-        
+
             AssertState(new[]
             {
                 new[] {"F", " ", " "},
                 new[] {" ", " ", "1"},
                 new[] {" ", "3", "2"},
-            }, snake.GetState());
+            }, snake);
         }
 
         [Theory]
@@ -187,8 +187,8 @@ namespace SnakeRulesTest
             var snake = CreateSnake(state);
 
             snake.Move();
-            
-            AssertState(expected, snake.GetState());
+
+            AssertState(expected, snake);
         }
 
         [Theory]
@@ -199,8 +199,8 @@ namespace SnakeRulesTest
 
             snake.Turn(direction);
             snake.Move();
-            
-            AssertState(expected, snake.GetState());
+
+            AssertState(expected, snake);
         }
 
         public static IEnumerable<object[]> SingleMovesData =>
@@ -275,7 +275,7 @@ namespace SnakeRulesTest
                     },
                 },
             };
-        
+
         public static IEnumerable<object[]> TurnsData =>
             new List<object[]>
             {
@@ -344,7 +344,7 @@ namespace SnakeRulesTest
                     },
                 },
             };
-        
+
         private static Snake CreateSnake(string[][] state)
         {
             var parts = state.SelectMany((subArr, y) => subArr.Select((value, x) => new {x, y, value}))
@@ -361,32 +361,58 @@ namespace SnakeRulesTest
             return new Snake(parts, new Size(columns, state.Length), food);
         }
 
-        private static void AssertState(string[][] expected, State actual)
+        private static void AssertState(string[][] expected, Snake snake)
         {
             var width = expected.Length;
             var height = expected.Select(subArr => subArr.Length).Max();
-            Assert.Equal(expected, RenderMatrix(actual, width, height));
+            var renderer = new MatrixRenderer(width, height);
+            snake.Render(renderer, renderer);
+            Assert.Equal(expected, renderer.GetMatrix());
         }
 
-        private static string[][] RenderMatrix(State state, int width, int height)
+        private class MatrixRenderer : ISnakeRenderer, IFoodRenderer
         {
-            var actualMatrix = new string[width][];
-            for (var i = 0; i < width; i++)
+            private readonly string[][] _matrix;
+            private int _renderSnakeCalls = 1;
+
+            public MatrixRenderer(int width, int height)
             {
-                actualMatrix[i] = Enumerable.Repeat(" ", height).ToArray();
+                _matrix = new string[width][];
+                for (var i = 0; i < width; i++)
+                {
+                    _matrix[i] = Enumerable.Repeat(" ", height).ToArray();
+                }
             }
 
-            foreach (var part in state.BodyParts)
+            public void RenderHead(Point coordinates, Direction direction)
             {
-                actualMatrix[part.Y][part.X] = (state.BodyParts.IndexOf(part) + 1).ToString();
+                RenderNextBodyPart(coordinates);
             }
 
-            if (state.Food is {} food)
+            public void RenderBody(Point coordinates, Direction toPrev, Direction toNext)
             {
-                actualMatrix[food.Y][food.X] = "F";
+                RenderNextBodyPart(coordinates);
             }
 
-            return actualMatrix;
+            public void RenderTail(Point coordinates, Direction direction)
+            {
+                RenderNextBodyPart(coordinates);
+            }
+
+            public void RenderFood(Point coordinates)
+            {
+                _matrix[coordinates.Y][coordinates.X] = "F";
+            }
+
+            private void RenderNextBodyPart(Point coordinates)
+            {
+                _matrix[coordinates.Y][coordinates.X] = (_renderSnakeCalls++).ToString();
+            }
+
+            public string[][] GetMatrix()
+            {
+                return _matrix;
+            }
         }
     }
 }

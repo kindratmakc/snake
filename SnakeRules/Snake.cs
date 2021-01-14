@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SnakeRules
@@ -34,7 +33,7 @@ namespace SnakeRules
         public void Move()
         {
             if (_isDead) return;
-            
+
             var newParts = _parts.Select((part, index) => index == 0
                 ? part + _direction.GetPoint()
                 : _parts[index - 1]
@@ -64,11 +63,6 @@ namespace SnakeRules
             return bodyPartsCollidedWithHead.Any() || !board.Contains(new Point(newHead.X, newHead.Y));
         }
 
-        public State GetState()
-        {
-            return new(_parts, _food);
-        }
-
         public void Render(ISnakeRenderer snakeRenderer, IFoodRenderer foodRenderer)
         {
             foreach (var part in _parts)
@@ -92,9 +86,9 @@ namespace SnakeRules
                 snakeRenderer.RenderBody(part, toPrev, toNext);
             }
 
-            if (_food is {} food)
+            if (_food is { } food)
             {
-                foodRenderer.Render(food);
+                foodRenderer.RenderFood(food);
             }
         }
 
@@ -117,78 +111,6 @@ namespace SnakeRules
         {
             return _isDead;
         }
-
-        private readonly struct Rectangle
-        {
-            private readonly int _width;
-            private readonly int _height;
-
-            public Rectangle(Size size)
-            {
-                _width = size.Width;
-                _height = size.Height;
-            }
-
-            public bool Contains(Point point)
-            {
-                return point.X >= 0 && point.X < _width && point.Y >= 0 && point.Y < _height;
-            }
-        }
-    }
-
-    public readonly struct Size
-    {
-        public Size(int width, int height)
-        {
-            Width = width;
-            Height = height;
-        }
-
-        public int Width { get; }
-        public int Height { get; }
-    }
-
-    public readonly struct Point
-    {
-        public static readonly Point Zero = new(0, 0);
-
-        public Point(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
-
-        public int X { get; }
-        public int Y { get; }
-
-        public Direction GetDirection()
-        {
-            return this switch
-            {
-                {X: 0, Y: -1} => Direction.Up,
-                {X: 0, Y: 1} => Direction.Down,
-                {X: 1, Y: 0} => Direction.Right,
-                {X: -1, Y: 0} => Direction.Left,
-                _ => throw new ArgumentOutOfRangeException(),
-            };
-        }
-
-        public static Point operator +(Point a, Point b) => new(a.X + b.X, a.Y + b.Y);
-        public static Point operator -(Point a, Point b) => new(a.X - b.X, a.Y - b.Y);
-        public static bool operator ==(Point a, Point b) => a.X == b.X && a.Y == b.Y;
-        public static bool operator !=(Point a, Point b) => a.X != b.X || a.Y != b.Y;
-    }
-
-    public class State
-    {
-        public State(IList<Point> bodyParts, Point? food)
-        {
-            BodyParts = bodyParts;
-            Food = food;
-        }
-
-        public IList<Point> BodyParts { get; }
-        public Point? Food { get; }
     }
 
     public interface ISnakeRenderer
@@ -200,6 +122,6 @@ namespace SnakeRules
 
     public interface IFoodRenderer
     {
-        public void Render(Point coordinates);
+        public void RenderFood(Point coordinates);
     }
 }

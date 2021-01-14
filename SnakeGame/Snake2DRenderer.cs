@@ -102,7 +102,7 @@ namespace SnakeGame
             };
         }
 
-        public void Render(Point coordinates)
+        public void RenderFood(Point coordinates)
         {
             _batch.DrawString(_foodFont, "F", coordinates.ToXnaVector() * Step, Color.Black);
         }
